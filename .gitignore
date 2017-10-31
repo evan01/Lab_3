@@ -1,0 +1,6 @@
+
+/cmake-build-debug/
+/MDK-ARM/lab3.uvguix.Evan
+*.xml
+/CMakeLists.txt
+/.idea/*
