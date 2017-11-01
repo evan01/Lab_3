@@ -4,3 +4,5 @@
 *.xml
 /CMakeLists.txt
 /.idea/*
+/Drivers/
+/MDK-ARM/
