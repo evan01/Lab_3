@@ -35,7 +35,6 @@
 #include "gpio.h"
 #include "lis3dsh.h"
 
-
 LIS3DSH_InitTypeDef 		Acc_instance;
 /* Private variables ---------------------------------------------------------*/
 
@@ -177,12 +176,3 @@ void assert_failed(uint8_t* file, uint32_t line)
 
 #endif
 
-/**
-  * @}
-  */ 
-
-/**
-  * @}
-*/ 
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
