@@ -57,6 +57,7 @@ int main(void)
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
+  HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 
   /* Configure the system clock */
   SystemClock_Config();
@@ -90,8 +91,6 @@ int main(void)
 				}
 			SysTickCount=0;
 			}
-		
-
   }
 
 
@@ -157,7 +156,7 @@ void initializeACC(void){
 	*/
 	Acc_interruptConfig.Dataready_Interrupt = LIS3DSH_DATA_READY_INTERRUPT_ENABLED;
 	Acc_interruptConfig.Interrupt_signal = LIS3DSH_ACTIVE_HIGH_INTERRUPT_SIGNAL;
-	Acc_interruptConfig.Interrupt_type = LIS3DSH_INTERRUPT_REQUEST_LATCHED;
+	Acc_interruptConfig.Interrupt_type = LIS3DSH_INTERRUPT_REQUEST_PULSED;
 	LIS3DSH_DataReadyInterruptConfig(&Acc_interruptConfig);
 }
 
