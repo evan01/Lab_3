@@ -45,17 +45,13 @@ LIS3DSH_DRYInterruptConfigTypeDef Acc_interruptConfig;
 void SystemClock_Config(void);
 void initializeACC			(void);
 int SysTickCount;
-int INTERUPTCOUNT;
 
 int main(void)
 {
+	//Initialize the accelerometer
 	initializeACC	();
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
-	
-	//SET GROUP AND SUB PRIORITIES FOR INTERUPTS
-  HAL_NVIC_EnableIRQ(EXTI0_IRQn);
-	HAL_NVIC_SetPriority(EXTI0_IRQn, 4,4);
 
   /* Configure the system clock */
   SystemClock_Config();
@@ -74,7 +70,6 @@ int main(void)
 /** System Clock Configuration
 	The clock source is configured as external at 168 MHz HCLK
 */
-
 void SystemClock_Config(void)
 {
 
@@ -111,9 +106,7 @@ void SystemClock_Config(void)
   HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
 }
 
-/* USER CODE BEGIN 4 */
 
-/* USER CODE END 4 */
 void initializeACC(void){
 	
 	Acc_instance.Axes_Enable				= LIS3DSH_XYZ_ENABLE;
@@ -133,6 +126,10 @@ void initializeACC(void){
 	Acc_interruptConfig.Interrupt_signal = LIS3DSH_ACTIVE_HIGH_INTERRUPT_SIGNAL;
 	Acc_interruptConfig.Interrupt_type = LIS3DSH_INTERRUPT_REQUEST_PULSED;
 	LIS3DSH_DataReadyInterruptConfig(&Acc_interruptConfig);
+	
+	//ENABLE the INTERRUPTS
+	HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+	HAL_NVIC_SetPriority(EXTI0_IRQn, 4,4);
 }
 
 #ifdef USE_FULL_ASSERT
