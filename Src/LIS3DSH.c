@@ -468,6 +468,7 @@ uint32_t LIS3DSH_TIMEOUT_UserCallback(void)
       printf("X: %3f   Y: %3f   Z: %3f  absX: %d\n", accX, accY, accZ , (int)(Buffer[0]));
 //	printf("Interrupt COUNT: %d\n", INTERUPTCOUNT);
       HAL_GPIO_TogglePin(GPIOD,GPIO_PIN_13);
+			break;
   }
 	return 0;
 }
