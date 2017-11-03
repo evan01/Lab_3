@@ -49,15 +49,13 @@ int INTERUPTCOUNT;
 
 int main(void)
 {
-	uint8_t status;
-	float Buffer[3];
-	float accX, accY, accZ;
-
 	initializeACC	();
-
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
+	
+	//SET GROUP AND SUB PRIORITIES FOR INTERUPTS
   HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+	HAL_NVIC_SetPriority(EXTI0_IRQn, 4,4);
 
   /* Configure the system clock */
   SystemClock_Config();
@@ -68,29 +66,6 @@ int main(void)
   while (1)
   {
 
-	/* this is just an example of reading the Accelerometer data in polling technique. You are
-		required to read value in interrupt mode automatically, without requestin for a new data every time.
-		In fact, the Accl IC will generate data at a certain rate that you have to configure it.
-	*/
-	// an example of pulse division.
-		if (SysTickCount == 20) 
-		{			
-				LIS3DSH_Read (&status, LIS3DSH_STATUS, 1);
-				//The first four bits denote if we have new data on all XYZ axes, 
-		   	//Z axis only, Y axis only or Z axis only. If any or all changed, proceed
-				if ((status & 0x0F) != 0x00)
-				{
-			
-					LIS3DSH_ReadACC(&Buffer[0]);
-					accX = (float)Buffer[0];
-					accY = (float)Buffer[1];
-					accZ = (float)Buffer[2];
-					//printf("X: %3f   Y: %3f   Z: %3f  absX: %d\n", accX, accY, accZ , (int)(Buffer[0]));
-					printf("Interrupt COUNT: %d\n", INTERUPTCOUNT);
-					HAL_GPIO_TogglePin(GPIOD,GPIO_PIN_13);
-				}
-			SysTickCount=0;
-			}
   }
 
 

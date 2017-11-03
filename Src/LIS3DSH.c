@@ -457,9 +457,18 @@ static uint8_t LIS3DSH_SendByte(uint8_t byte)
 uint32_t LIS3DSH_TIMEOUT_UserCallback(void)
 {
   /* Block communication and all processes */
-//  while (1)
- // {
-  //}
+  while (1)
+  {
+      float Buffer[3];
+      float accX, accY, accZ;
+      LIS3DSH_ReadACC(&Buffer[0]);
+      accX = (float)Buffer[0];
+      accY = (float)Buffer[1];
+      accZ = (float)Buffer[2];
+      printf("X: %3f   Y: %3f   Z: %3f  absX: %d\n", accX, accY, accZ , (int)(Buffer[0]));
+//	printf("Interrupt COUNT: %d\n", INTERUPTCOUNT);
+      HAL_GPIO_TogglePin(GPIOD,GPIO_PIN_13);
+  }
 	return 0;
 }
 #endif /* USE_DEFAULT_TIMEOUT_CALLBACK */

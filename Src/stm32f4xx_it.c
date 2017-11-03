@@ -62,13 +62,6 @@ void SysTick_Handler(void)
   /* USER CODE END SysTick_IRQn 1 */
 }
 
-
-void EXTI0_IRQHandler(void){
-	//HAL_EXTI0_IRQHandler();
-	printf("handled");
-   INTERUPTCOUNT = 23;
-}
-
 /******************************************************************************/
 /* STM32F4xx Peripheral Interrupt Handlers                                    */
 /* Add here the Interrupt Handlers for the used peripherals.                  */
@@ -76,7 +69,8 @@ void EXTI0_IRQHandler(void){
 /* please refer to the startup file (startup_stm32f4xx.s).                    */
 /******************************************************************************/
 
-/* USER CODE BEGIN 1 */
-
-/* USER CODE END 1 */
+void EXTI0_IRQHandler(void){
+	//This gets called when the peripheral is ready.
+    LIS3DSH_TIMEOUT_UserCallback();
+}
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
