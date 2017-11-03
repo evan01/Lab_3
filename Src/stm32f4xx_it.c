@@ -41,6 +41,7 @@
 
 /* External variables --------------------------------------------------------*/
 extern int SysTickCount;
+extern int INTERUPTCOUNT;
 /******************************************************************************/
 /*            Cortex-M4 Processor Interruption and Exception Handlers         */ 
 /******************************************************************************/
@@ -62,8 +63,10 @@ void SysTick_Handler(void)
 }
 
 
-void EXTIO_IRQHandler(void){
+void EXTI0_IRQHandler(void){
+	//HAL_EXTI0_IRQHandler();
 	printf("handled");
+   INTERUPTCOUNT = 23;
 }
 
 /******************************************************************************/

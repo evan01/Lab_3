@@ -35,7 +35,8 @@
 #include "gpio.h"
 #include "lis3dsh.h"
 
-LIS3DSH_InitTypeDef 		Acc_instance;
+LIS3DSH_InitTypeDef Acc_instance;
+LIS3DSH_DRYInterruptConfigTypeDef Acc_interruptConfig;
 /* Private variables ---------------------------------------------------------*/
 
 
@@ -44,8 +45,7 @@ LIS3DSH_InitTypeDef 		Acc_instance;
 void SystemClock_Config(void);
 void initializeACC			(void);
 int SysTickCount;
-
-
+int INTERUPTCOUNT;
 
 int main(void)
 {
@@ -72,7 +72,7 @@ int main(void)
 		In fact, the Accl IC will generate data at a certain rate that you have to configure it.
 	*/
 	// an example of pulse division.
-		if (SysTickCount ==20) 
+		if (SysTickCount == 20) 
 		{			
 				LIS3DSH_Read (&status, LIS3DSH_STATUS, 1);
 				//The first four bits denote if we have new data on all XYZ axes, 
@@ -84,7 +84,8 @@ int main(void)
 					accX = (float)Buffer[0];
 					accY = (float)Buffer[1];
 					accZ = (float)Buffer[2];
-					printf("X: %3f   Y: %3f   Z: %3f  absX: %d\n", accX, accY, accZ , (int)(Buffer[0]));
+					//printf("X: %3f   Y: %3f   Z: %3f  absX: %d\n", accX, accY, accZ , (int)(Buffer[0]));
+					printf("Interrupt COUNT: %d\n", INTERUPTCOUNT);
 					HAL_GPIO_TogglePin(GPIOD,GPIO_PIN_13);
 				}
 			SysTickCount=0;
@@ -152,8 +153,12 @@ void initializeACC(void){
 	
 	/* Enabling interrupt conflicts with push button. Be careful when you plan to 
 	use the interrupt of the accelerometer sensor connceted to PIN A.0
-
+	Acc_interruptConfig.
 	*/
+	Acc_interruptConfig.Dataready_Interrupt = LIS3DSH_DATA_READY_INTERRUPT_ENABLED;
+	Acc_interruptConfig.Interrupt_signal = LIS3DSH_ACTIVE_HIGH_INTERRUPT_SIGNAL;
+	Acc_interruptConfig.Interrupt_type = LIS3DSH_INTERRUPT_REQUEST_LATCHED;
+	LIS3DSH_DataReadyInterruptConfig(&Acc_interruptConfig);
 }
 
 #ifdef USE_FULL_ASSERT
