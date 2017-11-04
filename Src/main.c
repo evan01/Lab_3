@@ -40,7 +40,6 @@ LIS3DSH_DRYInterruptConfigTypeDef Acc_interruptConfig;
 /* Private variables ---------------------------------------------------------*/
 
 
-
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 void initializeACC			(void);
@@ -59,9 +58,8 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
 
-  while (1)
-  {
-
+  while (1){
+		//Main program execution in here.
   }
 
 
