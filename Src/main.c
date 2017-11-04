@@ -1,54 +1,20 @@
-/**
-  ******************************************************************************
-  * File Name          : main.c
-  * Description        : Main program body
-  ******************************************************************************
-  *
-  * COPYRIGHT(c) 2017 STMicroelectronics
-  *
-  * Redistribution and use in source and binary forms, with or without modification,
-  * are permitted provided that the following conditions are met:
-  *   1. Redistributions of source code must retain the above copyright notice,
-  *      this list of conditions and the following disclaimer.
-  *   2. Redistributions in binary form must reproduce the above copyright notice,
-  *      this list of conditions and the following disclaimer in the documentation
-  *      and/or other materials provided with the distribution.
-  *   3. Neither the name of STMicroelectronics nor the names of its contributors
-  *      may be used to endorse or promote products derived from this software
-  *      without specific prior written permission.
-  *
-  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-  *
-  ******************************************************************************
-  */
 /* Includes ------------------------------------------------------------------*/
+#include <stm32f407xx.h>
 #include "stm32f4xx_hal.h"
 #include "gpio.h"
 #include "lis3dsh.h"
+#include "accelerometer.h"
 
-LIS3DSH_InitTypeDef Acc_instance;
-LIS3DSH_DRYInterruptConfigTypeDef Acc_interruptConfig;
 /* Private variables ---------------------------------------------------------*/
-
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-void initializeACC			(void);
 int SysTickCount;
 
 int main(void)
 {
 	//Initialize the accelerometer
-	initializeACC	();
+  initializeAccelerometer();
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
 
@@ -62,14 +28,12 @@ int main(void)
 		//Main program execution in here.
   }
 
-
 }
 
 /** System Clock Configuration
 	The clock source is configured as external at 168 MHz HCLK
 */
-void SystemClock_Config(void)
-{
+void SystemClock_Config(void){
 
   RCC_OscInitTypeDef RCC_OscInitStruct;
   RCC_ClkInitTypeDef RCC_ClkInitStruct;
@@ -94,8 +58,8 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
-  HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5);
-
+  //HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5);
+  HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_ACR_LATENCY_5WS);
   HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
 
   HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
@@ -105,30 +69,8 @@ void SystemClock_Config(void)
 }
 
 
-void initializeACC(void){
-	
-	Acc_instance.Axes_Enable				= LIS3DSH_XYZ_ENABLE;
-	Acc_instance.AA_Filter_BW				= LIS3DSH_AA_BW_50;
-	Acc_instance.Full_Scale					= LIS3DSH_FULLSCALE_2;
-	Acc_instance.Power_Mode_Output_DataRate		= LIS3DSH_DATARATE_25;
-	Acc_instance.Self_Test					= LIS3DSH_SELFTEST_NORMAL;
-	Acc_instance.Continous_Update   = LIS3DSH_ContinousUpdate_Enabled;
-	
-	LIS3DSH_Init(&Acc_instance);	
-	
-	/* Enabling interrupt conflicts with push button. Be careful when you plan to 
-	use the interrupt of the accelerometer sensor connceted to PIN A.0
-	Acc_interruptConfig.
-	*/
-	Acc_interruptConfig.Dataready_Interrupt = LIS3DSH_DATA_READY_INTERRUPT_ENABLED;
-	Acc_interruptConfig.Interrupt_signal = LIS3DSH_ACTIVE_HIGH_INTERRUPT_SIGNAL;
-	Acc_interruptConfig.Interrupt_type = LIS3DSH_INTERRUPT_REQUEST_PULSED;
-	LIS3DSH_DataReadyInterruptConfig(&Acc_interruptConfig);
-	
-	//ENABLE the INTERRUPTS
-	HAL_NVIC_EnableIRQ(EXTI0_IRQn);
-	HAL_NVIC_SetPriority(EXTI0_IRQn, 4,4);
-}
+
+
 
 #ifdef USE_FULL_ASSERT
 
