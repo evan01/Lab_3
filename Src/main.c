@@ -4,8 +4,11 @@
 #include "gpio.h"
 #include "lis3dsh.h"
 #include "accelerometer.h"
+#include "display.h"
 
 /* Private variables ---------------------------------------------------------*/
+int displayValue = 0;
+
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
@@ -26,6 +29,7 @@ int main(void)
 
   while (1){
 		//Main program execution in here.
+		displayDigits(displayValue);
   }
 
 }
