@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 
 typedef enum {
 	SLEEP_STATE,
@@ -30,10 +31,10 @@ typedef enum {
 	LONG_PRESS
 } press_type_e;
 
-int roll;
+int target_roll;
 char roll_buf[10];
 int roll_pointer = 0;
-int pitch;
+int target_pitch;
 char pitch_buf[10];
 int pitch_pointer = 0;
 
@@ -202,8 +203,8 @@ int set_state(){
 				if(event == HASHTAG){
 					next_state = ENTER_PITCH_STATE;
 					// sprintf(roll_buf + roll_pointer, "\0");
-					sscanf(roll_buf, "%d", &roll);
-					printf("Final roll = %d\n", roll);
+					sscanf(roll_buf, "%d", &target_roll);
+					printf("Final roll = %d\n", target_roll);
 				}else if(event == STAR){
 					//clear last digit
 					printf("Clearing digit from roll\n");
@@ -220,8 +221,8 @@ int set_state(){
 				if(event == HASHTAG){
 					next_state = PITCH_MONITOR_STATE;
 					// sprintf(pitch_buf + pitch_pointer, "\0");
-					sscanf(pitch_buf, "%d", &pitch);
-					printf("Final pitch = %d\n", pitch);
+					sscanf(pitch_buf, "%d", &target_pitch);
+					printf("Final pitch = %d\n", target_pitch);
 				}else if(event == STAR){
 					//clear last digit
 					printf("Clearing digit from pitch\n");

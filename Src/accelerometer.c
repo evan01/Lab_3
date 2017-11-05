@@ -1,9 +1,11 @@
 #include "LIS3DSH.h"
 #include <stm32f407xx.h>
+#include <math.h>
 
 LIS3DSH_InitTypeDef Acc_instance;
 LIS3DSH_DRYInterruptConfigTypeDef Acc_interruptConfig;
-
+double roll = 0.00;
+double pitch = 0.00;
 
 /*
 	This is the code for the accelerometer on the board. Here's how to set up the accelerometer.
@@ -59,6 +61,13 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	
 	//Then calculate the tilt
     printf("X: %3f   Y: %3f   Z: %3f  absX: %d\n", accX, accY, accZ , (int)(Buffer[0]));
+
+    /*
+	creating the pitch roll values
+    */
+    roll = (atan2(accY , accZ)+180.0)/M_PI;
+  	pitch = (atan2((- accX) , sqrt(accY * accY + accZ * accZ))*180.0)/M_PI;
+
     HAL_GPIO_TogglePin(GPIOD,GPIO_PIN_13);
 }
 
