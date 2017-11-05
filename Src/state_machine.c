@@ -1,10 +1,4 @@
-
-
-typedef enum {
-	INPUT_MODE,
-	OPERATION_MODE,
-
-}general_state_e;
+#include <stdio.h>
 
 typedef enum {
 	SLEEP_STATE,
@@ -36,96 +30,166 @@ typedef enum {
 	LONG_PRESS
 } press_type_e;
 
+int roll;
+char roll_buf[10];
+int roll_pointer = 0;
+int pitch;
+char pitch_buf[10];
+int pitch_pointer = 0;
+
+
 state_e state = START_STATE;
 state_e next_state;
 press_type_e press_type;
 event_e event;
 
+/*
+0 -> roll
+1 -> pitch
+*/
+int updateAngle(event_e event, int pitch_roll){
+	if(pitch_roll == 0){
+		sprintf(roll_buf + roll_pointer, "%d", event);
+		printf("%s\n", roll_buf);
+		roll_pointer++;
+	}else{
+		sprintf(pitch_buf + pitch_pointer, "%d", event);
+		printf("%s\n", pitch_buf);
+		pitch_pointer++;
+	}
+
+}
+
+int clearingLastDigit(int pitch_roll){
+	if(pitch_roll == 0){
+		roll_pointer--;
+		sprintf(roll_buf + roll_pointer, "\0");
+		printf("%s\n", roll_buf);
+	}else{
+		pitch_pointer--;
+		sprintf(pitch_buf + pitch_pointer, "\0");
+		printf("%s\n", pitch_buf);
+	}
+}
+
+
 int setPressType(int duration){
+	printf("Press Type: ");
 	switch(duration){
 		case 0: 
 			press_type = REGULAR;  
+			printf("REGULAR, ");
 			break;
 		case 1:
 			press_type = MID_PRESS;
+			printf("MID_PRESS, ");
 			break;
 		case 2:
 			press_type = MID_PRESS;
+			printf("MID_PRESS, ");
 			break;
 		case 3:
 			press_type = LONG_PRESS;
+			printf("LONG_PRESS, ");
 			break;
 		default:
 			press_type = REGULAR;
+			printf("REGULAR, ");
 			break;
 	}
 	return 0;
 }
 
 int setEvent(int digit){
+	printf("Event: ");
 	switch(digit){
 		case 0:
 			event = NUMBER_0;
+			printf("NUMBER_0\n");
 			break;
 		case 1:
 			event = NUMBER_1;
+			printf("NUMBER_1\n");
 			break;
 		case 2:
 			event = NUMBER_2;
+			printf("NUMBER_2\n");
 			break;
 		case 3:
 			event = NUMBER_3;
+			printf("NUMBER_3\n");
 			break;
 		case 4:
 			event = NUMBER_4;
+			printf("NUMBER_4\n");
 			break;
 		case 5:
 			event = NUMBER_5;
+			printf("NUMBER_5\n");
 			break;
 		case 6:
 			event = NUMBER_6;
+			printf("NUMBER_6\n");
 			break;
 		case 7:
 			event = NUMBER_7;
+			printf("NUMBER_7\n");
 			break;
 		case 8:
 			event = NUMBER_8;
+			printf("NUMBER_8\n");
 			break;
 		case 9:
 			event = NUMBER_9;
+			printf("NUMBER_9\n");
 			break;
 		case 10:
 			event = STAR;
+			printf("STAR\n");
 			break;
 		case 11:
 			event = HASHTAG;
+			printf("HASHTAG\n");
 			break;
 	}
 	return 0;
 }
 
-int getKeypadInput(int digit, int duration){
+int updateState(int digit, int duration){
 	setPressType(duration);
 	setEvent(digit);
+	set_state();
 }
 
+
+
 int set_state(){
+	printf("Initial State: ");
+	printState(state);
+
 	if(state == START_STATE){
 		state = ENTER_ROLL_STATE;
 	}
 	if(press_type == LONG_PRESS){
 		if(event == STAR){
+			printf("going to SLEEP_STATE\n");
 			next_state = SLEEP_STATE;
 		}else if(event == HASHTAG && state == SLEEP_STATE){
+			printf("going to START_STATE\n");
 			next_state = START_STATE;
 		}else{
 			next_state = state;
 		}
 	}else if(press_type == MID_PRESS){
+		printf("Going back to START_STATE  %d \n", event);
 		if(event == STAR && state != SLEEP_STATE){
 			next_state = START_STATE;
+			memset(roll_buf, 0, 10);
+			memset(pitch_buf, 0, 10);
+			roll_pointer = 0;
+			pitch_pointer = 0;
 		}else{
-			next_state = state;
+			next_state = SLEEP_STATE;
 		}
 	}else{
 		switch(state){
@@ -137,19 +201,37 @@ int set_state(){
 			case ENTER_ROLL_STATE:
 				if(event == HASHTAG){
 					next_state = ENTER_PITCH_STATE;
+					// sprintf(roll_buf + roll_pointer, "\0");
+					sscanf(roll_buf, "%d", &roll);
+					printf("Final roll = %d\n", roll);
 				}else if(event == STAR){
 					//clear last digit
+					printf("Clearing digit from roll\n");
+					next_state = ENTER_ROLL_STATE;
+					clearingLastDigit(0);
 				}else{
 					//add number to roll variable
+					printf("Adding digit %d\n", event-1);
+					next_state = ENTER_ROLL_STATE;
+					updateAngle(event-1, 0);
 				}
 				break;
 			case ENTER_PITCH_STATE:
 				if(event == HASHTAG){
 					next_state = PITCH_MONITOR_STATE;
+					// sprintf(pitch_buf + pitch_pointer, "\0");
+					sscanf(pitch_buf, "%d", &pitch);
+					printf("Final pitch = %d\n", pitch);
 				}else if(event == STAR){
 					//clear last digit
+					printf("Clearing digit from pitch\n");
+					next_state = ENTER_PITCH_STATE;
+					clearingLastDigit(1);
 				}else{
 					//add number to pitch variable
+					printf("Adding digit %d\n", event-1);
+					next_state = ENTER_PITCH_STATE;
+					updateAngle(event-1, 1);
 				}
 				break;
 			case PITCH_MONITOR_STATE:
@@ -171,6 +253,80 @@ int set_state(){
 				}
 				break;
 		}
-		state = next_state;
 	}
+	state = next_state;
+	printf("End State: ");
+	printState(state);
+	return 0;
+}
+
+int printState(state_e state){
+	switch(state){
+		case START_STATE:
+			printf("START_STATE\n");
+			break;
+		case SLEEP_STATE:
+			printf("SLEEP_STATE\n");
+			break;
+		case ENTER_ROLL_STATE:
+			printf("ENTER_ROLL_STATE\n");
+			break;
+		case ENTER_PITCH_STATE:
+			printf("ENTER_PITCH_STATE\n");
+			break;
+		case PITCH_MONITOR_STATE:
+			printf("PITCH_MONITOR_STATE\n");
+			break;
+		case ROLL_MONITOR_STATE:
+			printf("ROLL_MONITOR_STATE\n");
+			break;
+	}
+	return 0;
+}
+
+int main(){
+	printf("---------------------------------------\n");
+	updateState(1, 0);
+	printf("---------------------------------------\n");
+	updateState(2, 0);
+	printf("---------------------------------------\n");
+	updateState(9, 0);
+	printf("---------------------------------------\n");
+	updateState(10, 0);
+	printf("---------------------------------------\n");
+	updateState(11, 0);
+	//going to next state 
+	printf("---------------------------------------\n");
+	updateState(4, 0);
+	printf("---------------------------------------\n");
+	updateState(5, 0);
+	printf("---------------------------------------\n");
+	updateState(11, 0);
+	//going to next state 
+	printf("---------------------------------------\n");
+	updateState(10, 2);
+	//reset to start
+	printf("---------------------------------------\n");
+	updateState(3, 0);
+	printf("---------------------------------------\n");
+	updateState(6, 0);
+	printf("---------------------------------------\n");
+	updateState(1, 0);
+	printf("---------------------------------------\n");
+	updateState(10, 0);
+	printf("---------------------------------------\n");
+	updateState(11, 0);
+	//going to next state
+	printf("---------------------------------------\n");
+	updateState(1, 0);
+	printf("---------------------------------------\n");
+	updateState(3, 0);
+	printf("---------------------------------------\n");
+	updateState(11, 0);
+
+
+
+
+	
+	return 0;
 }
