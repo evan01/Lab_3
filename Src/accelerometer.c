@@ -1,13 +1,3 @@
-#include "LIS3DSH.h"
-#include <stm32f407xx.h>
-#include <math.h>
-
-#define M_PI 3.14159265358979323846
-LIS3DSH_InitTypeDef Acc_instance;
-LIS3DSH_DRYInterruptConfigTypeDef Acc_interruptConfig;
-double roll = 0.00;
-double pitch = 0.00;
-
 /*
  *  ACCELEROMETER CODE
 	This is the code for the accelerometer on the board. Here's how to set up the accelerometer.
@@ -22,6 +12,23 @@ double pitch = 0.00;
         -initializeAccelerometer()
 */
 
+
+#include "LIS3DSH.h"
+#include <stm32f407xx.h>
+#include <math.h>
+#include "arm_math.h"
+#define M_PI 3.14159265358979323846
+
+//Global Constants
+LIS3DSH_InitTypeDef Acc_instance;
+LIS3DSH_DRYInterruptConfigTypeDef Acc_interruptConfig;
+double roll = 0.00;
+double pitch = 0.00;
+
+//FILTER SETTINGS
+float Coef[5] = {0.2, 0.4, 0.2, 0.3, -0.2};
+
+
 LIS3DSH_InitTypeDef Acc_instance;
 LIS3DSH_DRYInterruptConfigTypeDef Acc_interruptConfig;
 
@@ -31,14 +38,13 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
     float Buffer[3];
     float accX, accY, accZ;
 
-    //First get the x,y,z readings from the accelerometer
+    //First get the filtered x,y,z readings from the accelerometer
     LIS3DSH_ReadACC(&Buffer[0]);
     accX = (float)Buffer[0];
     accY = (float)Buffer[1];
     accZ = (float)Buffer[2];
     
 //    printf("X: %3f   Y: %3f   Z: %3f  absX: %d\n", accX, accY, accZ , (int)(Buffer[0]));
-
 
     /*
     creating the pitch roll values
@@ -51,12 +57,31 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
     HAL_GPIO_TogglePin(GPIOD,GPIO_PIN_13);
 }
 
+/**
+ * This is a filter function, with which we feed in the accelerometer values.
+ * @param InputArray
+ * @param OutputArray
+ * @param coef
+ * @param Length
+ * @return
+ */
+float* IIR_CMSIS(float* InputArray, float* OutputArray, int Length){
+    float pState[4] = {0.0,0.0,0.0,0.0};
+    int numStages = 1;
+    /* initialize the biquad filter */
+    arm_biquad_casd_df1_inst_f32 S1 = {numStages, pState, coef};
+    /* process the input */
+    arm_biquad_cascade_df1_f32(&S1, InputArray, OutputArray, Length);
+    return OutputArray;
+}
 
 /**
  * This function should only be called once, will print callibration values
  */
 void calibrateAccelerometer(void){
+    for (int i = 0; i < 1000; ++i) {
 
+    }
 }
 
 /**
