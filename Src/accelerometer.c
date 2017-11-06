@@ -36,8 +36,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
     accX = (float)Buffer[0];
     accY = (float)Buffer[1];
     accZ = (float)Buffer[2];
-
-    //Then calculate the tilt
+    
 //    printf("X: %3f   Y: %3f   Z: %3f  absX: %d\n", accX, accY, accZ , (int)(Buffer[0]));
 
 
@@ -45,8 +44,8 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
     creating the pitch roll values
     */
 
-    pitch = (atan2((- accX) , sqrt(accY * accY + accZ * accZ))*180.0)/M_PI;
-    roll = (atan2(accY , accZ)+180.0)/M_PI;
+    pitch = (atan2((- accY) , sqrt(accX* accX + accZ * accZ))*180.0)/M_PI;
+    roll = (atan2(accX , accZ)*180.0)/M_PI;
     printf("PITCH: %f\nROLL:%f\n\n",pitch,roll);
 
     HAL_GPIO_TogglePin(GPIOD,GPIO_PIN_13);
