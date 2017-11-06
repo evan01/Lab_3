@@ -18,6 +18,7 @@ int main(void)
 {
 	//Initialize the accelerometer
   initializeAccelerometer();
+	
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
 
@@ -29,7 +30,7 @@ int main(void)
 
   while (1){
 		//Main program execution in here.
-		displayDigits(displayValue);
+//		displayDigits(displayValue);
   }
 
 }

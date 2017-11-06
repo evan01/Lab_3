@@ -73,6 +73,5 @@ void EXTI0_IRQHandler(void){
 	//This gets called when the peripheral is ready.
     //Call the HAL interrupt function...
     HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
-    //LIS3DSH_TIMEOUT_UserCallback();
 }
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
