@@ -5,9 +5,11 @@
 #include "lis3dsh.h"
 #include "accelerometer.h"
 #include "display.h"
+#include "state_machine.h"
+
 
 /* Private variables ---------------------------------------------------------*/
-int displayValue = 0;
+float displayValue = 0;
 
 
 /* Private function prototypes -----------------------------------------------*/
@@ -30,7 +32,13 @@ int main(void)
 
   while (1){
 		//Main program execution in here.
-//		displayDigits(displayValue);
+		if(state == PITCH_MONITOR_STATE){
+			//		displayDigits(displayValuePitch);
+		}else if(state == ROLL_MONITOR_STATE){
+			//		displayDigits(displayValuePitch);
+		}else{
+			//		displayDigits(0.0);
+		}
   }
 
 }

@@ -69,7 +69,7 @@ float* IIR_CMSIS(float* InputArray, float* OutputArray, int Length){
     float pState[4] = {0.0,0.0,0.0,0.0};
     int numStages = 1;
     /* initialize the biquad filter */
-    arm_biquad_casd_df1_inst_f32 S1 = {numStages, pState, coef};
+    arm_biquad_casd_df1_inst_f32 S1 = {numStages, pState, Coef};
     /* process the input */
     arm_biquad_cascade_df1_f32(&S1, InputArray, OutputArray, Length);
     return OutputArray;

@@ -1,35 +1,10 @@
 #include <stdio.h>
 #include <string.h>
+#include "state_machine.h"
 
-typedef enum {
-	SLEEP_STATE,
-	START_STATE,
-	ENTER_ROLL_STATE,
-	ENTER_PITCH_STATE,
-	PITCH_MONITOR_STATE,
-	ROLL_MONITOR_STATE
-}state_e;
 
-typedef enum {
-	HASHTAG,
-	STAR,
-	NUMBER_1,
-	NUMBER_2,
-	NUMBER_3,
-	NUMBER_4,
-	NUMBER_5,
-	NUMBER_6,
-	NUMBER_7,
-	NUMBER_8,
-	NUMBER_9,
-	NUMBER_0
-}event_e;
 
-typedef enum {
-	REGULAR,
-	MID_PRESS,
-	LONG_PRESS
-} press_type_e;
+
 
 int target_roll;
 char roll_buf[10];
@@ -285,49 +260,49 @@ int printState(state_e state){
 	return 0;
 }
 
-int main(){
-	printf("---------------------------------------\n");
-	updateState(1, 0);
-	printf("---------------------------------------\n");
-	updateState(2, 0);
-	printf("---------------------------------------\n");
-	updateState(9, 0);
-	printf("---------------------------------------\n");
-	updateState(10, 0);
-	printf("---------------------------------------\n");
-	updateState(11, 0);
-	//going to next state 
-	printf("---------------------------------------\n");
-	updateState(4, 0);
-	printf("---------------------------------------\n");
-	updateState(5, 0);
-	printf("---------------------------------------\n");
-	updateState(11, 0);
-	//going to next state 
-	printf("---------------------------------------\n");
-	updateState(10, 2);
-	//reset to start
-	printf("---------------------------------------\n");
-	updateState(3, 0);
-	printf("---------------------------------------\n");
-	updateState(6, 0);
-	printf("---------------------------------------\n");
-	updateState(1, 0);
-	printf("---------------------------------------\n");
-	updateState(10, 0);
-	printf("---------------------------------------\n");
-	updateState(11, 0);
-	//going to next state
-	printf("---------------------------------------\n");
-	updateState(1, 0);
-	printf("---------------------------------------\n");
-	updateState(3, 0);
-	printf("---------------------------------------\n");
-	updateState(11, 0);
+//int main(){
+//	printf("---------------------------------------\n");
+//	updateState(1, 0);
+//	printf("---------------------------------------\n");
+//	updateState(2, 0);
+//	printf("---------------------------------------\n");
+//	updateState(9, 0);
+//	printf("---------------------------------------\n");
+//	updateState(10, 0);
+//	printf("---------------------------------------\n");
+//	updateState(11, 0);
+//	//going to next state 
+//	printf("---------------------------------------\n");
+//	updateState(4, 0);
+//	printf("---------------------------------------\n");
+//	updateState(5, 0);
+//	printf("---------------------------------------\n");
+//	updateState(11, 0);
+//	//going to next state 
+//	printf("---------------------------------------\n");
+//	updateState(10, 2);
+//	//reset to start
+//	printf("---------------------------------------\n");
+//	updateState(3, 0);
+//	printf("---------------------------------------\n");
+//	updateState(6, 0);
+//	printf("---------------------------------------\n");
+//	updateState(1, 0);
+//	printf("---------------------------------------\n");
+//	updateState(10, 0);
+//	printf("---------------------------------------\n");
+//	updateState(11, 0);
+//	//going to next state
+//	printf("---------------------------------------\n");
+//	updateState(1, 0);
+//	printf("---------------------------------------\n");
+//	updateState(3, 0);
+//	printf("---------------------------------------\n");
+//	updateState(11, 0);
 
 
 
 
-	
-	return 0;
-}
+//	
+//	return 0;
+//}
