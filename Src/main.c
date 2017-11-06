@@ -3,12 +3,13 @@
 #include "stm32f4xx_hal.h"
 #include "gpio.h"
 #include "lis3dsh.h"
-#include "accelerometer.h"
-#include "display.h"
+#include "accelerometer/accelerometer.h"
+#include "accelerometer/accelerometerCalibration.h"
+
+//#include "display.h"
 
 /* Private variables ---------------------------------------------------------*/
 int displayValue = 0;
-
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
