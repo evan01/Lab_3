@@ -9,7 +9,7 @@
 //CALIBRATION SETTINGS
 //GLOBAL Variables
 int sampleCount=0;
-#define MAX_NUMBER_OF_SAMPLES 1020
+#define MAX_NUMBER_OF_SAMPLES 10000
 ///**
 // * This function should only be called once, will compute a set of calibration values, and print them
 // */
