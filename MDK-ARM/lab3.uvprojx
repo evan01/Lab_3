@@ -311,7 +311,7 @@
           </ArmAdsMisc>
           <Cads>
             <interw>1</interw>
-            <Optim>1</Optim>
+            <Optim>4</Optim>
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
             <OneElfS>1</OneElfS>
@@ -486,12 +486,22 @@
             <File>
               <FileName>accelerometer.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Src\accelerometer.c</FilePath>
+              <FilePath>..\Src\accelerometer\accelerometer.c</FilePath>
+            </File>
+            <File>
+              <FileName>accelerometerCalibration.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\accelerometer\accelerometerCalibration.c</FilePath>
             </File>
             <File>
               <FileName>accelerometer.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\Src\accelerometer.h</FilePath>
+              <FilePath>..\Src\accelerometer\accelerometer.h</FilePath>
+            </File>
+            <File>
+              <FileName>accelerometerCalibration.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Src\accelerometer\accelerometerCalibration.h</FilePath>
             </File>
           </Files>
         </Group>
