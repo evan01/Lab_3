@@ -3,11 +3,8 @@
 #include "stm32f4xx_hal.h"
 #include "gpio.h"
 #include "lis3dsh.h"
-#include "accelerometer.h"
 #include "display.h"
-
 #include "accelerometer/accelerometer.h"
-#include "accelerometer/accelerometerCalibration.h"
 #include "state_machine.h"
 
 //#include "display.h"
@@ -34,14 +31,14 @@ int main(void)
   MX_GPIO_Init();
 
   while (1){
-		//Main program execution ins here.
-    if(state == PITCH_MONITOR_STATE){
-      //    displayDigits(displayValuePitch);
-    }else if(state == ROLL_MONITOR_STATE){
-      //    displayDigits(displayValuePitch);
-    }else{
-      //    displayDigits(0.0);
-    }
+//		//Main program execution ins here.
+//    if(state == PITCH_MONITOR_STATE){
+//      //    displayDigits(displayValuePitch);
+//    }else if(state == ROLL_MONITOR_STATE){
+//      //    displayDigits(displayValuePitch);
+//    }else{
+//      //    displayDigits(0.0);
+//    }
 
   }
 

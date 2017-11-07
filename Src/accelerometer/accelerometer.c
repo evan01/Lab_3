@@ -37,10 +37,31 @@ static float calibrationData[4][3] = {
     {-6.2797691,-2.6266551,-26.1443411}
 };
 
-static float filter_coef[5] = {0.2,0.2,0.5,0.2,0.5};
+static float filter_coef[5] = {0.2,0.2,0.2,0.2,0.2};
 
 LIS3DSH_InitTypeDef Acc_instance;
 LIS3DSH_DRYInterruptConfigTypeDef Acc_interruptConfig;
+
+
+/**
+ * This is a filter function, with which we feed in the accelerometer values.
+ * @param InputArray
+ * @param OutputArray
+ * @param coef
+ * @param Length
+ * @return
+ */
+float* IIR_CMSIS(float* InputArray, float* OutputArray, int Length){
+    float pState[4] = {0.0,0.0,0.0,0.0};
+    int numStages = 1;
+    /* initialize the biquad filter */
+    arm_biquad_casd_df1_inst_f32 S1 = {numStages, pState, filter_coef};
+    /* process the input */
+
+    arm_biquad_cascade_df1_f32(&S1, InputArray, OutputArray, Length);
+    return OutputArray;
+}
+
 
 // ***** CALLBACK FUNCTION *** gets called from stm32f4xx_it.c > stm32f4xx_hal_gpio.c, on INTERRUPT
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
@@ -54,7 +75,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
     accY = (float)Buffer[1];
     accZ = (float)Buffer[2];
 	
-	printf("RAW----->X: %3f   Y: %3f   Z: %3f\n", accX, accY, accZ);
+	printf("RAW----->\t\tX: %3f   Y: %3f   Z: %3f\n", accX, accY, accZ);
 
     //Then calibrate these readings,using calibration values
     float readings[3]= {
@@ -63,21 +84,30 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
         calibrationData[2][2]*accZ + calibrationData[3][2]
     };
 
-    //then filter each readings
-    float out[3];
-    for (int i = 0; i < 3; ++i) {
-        out[i] = readings[i]*filter_coef[0] +
-        in_lastSamples[i]*filter_coef[1] +
-        in_oldestSample[i]*filter_coef[2] +
-        out_lastSamples[i]*filter_coef[3] +
-        out_oldestSample[i]*filter_coef[4];
-    }
-	
-	printf("FILTERED----->X: %3f   Y: %3f   Z: %3f\n", out[0], out[1], out[2]);
+    printf("CLBRT----->\t\tX: %3f   Y: %3f   Z: %3f\n", readings[0], readings[1], readings[2]);
+
+    float x_in[3] = {in_oldestSample[0], in_lastSamples[0], readings[0]};
+    float y_in[3] = {in_oldestSample[1], in_lastSamples[1], readings[1]};
+    float z_in[3] = {in_oldestSample[2], in_lastSamples[2], readings[2]};
+
+    float x_out[3] = {out_oldestSample[0], out_lastSamples[0], 0};
+    float y_out[3] = {out_oldestSample[1], out_lastSamples[1], 0};
+    float z_out[3] = {out_oldestSample[2], out_lastSamples[2], 0};
+
+    IIR_CMSIS(x_in,x_out,3);
+    IIR_CMSIS(y_in,y_out,3);
+    IIR_CMSIS(z_in,z_out,3);
+
+    accX = x_out[2];
+    accY = y_out[2];
+    accZ = z_out[2];
+
+	printf("FILTERED----->\t\tX: %3f   Y: %3f   Z: %3f\n", x_out[2], y_out[2], z_out[2]);
 	
     /* creating the pitch roll values */
-    pitch = (atan2((- out[1]) , sqrt(out[0]* out[0] + out[2] * out[2]))*180.0)/M_PI;
-    roll = (atan2(out[0] , out[2])*180.0)/M_PI;
+    pitch = (atan2((- accY) , sqrt(accX* accX + accZ * accZ))*180.0)/M_PI;
+    roll = (atan2(accX , accZ)*180.0)/M_PI;
+
     printf("PITCH: %f\nROLL:%f\n\n",pitch,roll);
 
     HAL_GPIO_TogglePin(GPIOD,GPIO_PIN_13);
@@ -88,48 +118,11 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
     in_oldestSample = in_lastSamples;
     in_lastSamples = sample;
     out_oldestSample = out_lastSamples;
-    out_lastSamples = out;
-
+    float out[3] = {accX,accY,accZ};
+    memcpy(out_lastSamples,out, sizeof(float)*3);
 }
 
-//float* IIR_C(float* InputArray, float* OutputArray, float* coef, int Length){
-//
-//    /*Assumes that input array has size>=2 */
-//    if(Length > 0){
-//        OutputArray[0]= coef[0]*InputArray[0];
-//        if(Length > 1){
-//            OutputArray[1]= coef[0]*InputArray[1]+ coef[1]*InputArray[0] + coef[3]*OutputArray[0];
-//            for (int i=2; i < Length; i++){
-//                OutputArray[i] =
-//                    coef[0]*InputArray[i] +
-//                    coef[1]*InputArray[i-1] +
-//                    coef[2]*InputArray[i-2] +
-//                    coef[3]*OutputArray[i-1]+
-//                    coef[4]*OutputArray[i-2];
-//            }
-//        }
-//    }
-//    return OutputArray;
-//}
 
-/**
- * This is a filter function, with which we feed in the accelerometer values.
- * @param InputArray
- * @param OutputArray
- * @param coef
- * @param Length
- * @return
- */
-//float* IIR_CMSIS(float* InputArray, float* OutputArray, int Length){
-//    float pState[4] = {0.0,0.0,0.0,0.0};
-//    int numStages = 1;
-//    /* initialize the biquad filter */
-////    arm_biquad_casd_df1_inst_f32 S1 = {numStages, pState, coef};
-//    /* process the input */
-//
-////    arm_biquad_cascade_df1_f32(&S1, InputArray, OutputArray, Length);
-//    return OutputArray;
-//}
 
 
 /**
