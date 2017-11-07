@@ -42,7 +42,7 @@ int main(void)
     }else{
       //    displayDigits(0.0);
     }
-		
+
   }
 
 }
