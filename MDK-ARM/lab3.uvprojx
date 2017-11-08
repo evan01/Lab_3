@@ -493,6 +493,16 @@
               <FileType>5</FileType>
               <FilePath>..\Src\accelerometer\accelerometer.h</FilePath>
             </File>
+            <File>
+              <FileName>filter.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\filter\filter.c</FilePath>
+            </File>
+            <File>
+              <FileName>filter.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Src\filter\filter.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
