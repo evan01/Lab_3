@@ -7,7 +7,7 @@ TODO did you run bad experiments? the 6 board setups aren't optimal for least sq
 '''
 def readCsv(filename):
     #read
-    data = genfromtxt(filename, delimiter=',',filling_values=[0.0])
+    data = genfromtxt(filename, delimiter=',',filling_values=[0.0],invalid_raise=False,usecols=(0,1,2))
 
     #remove nans
     data = data[~np.isnan(data).any(axis=1)]
@@ -29,12 +29,12 @@ def main():
 
     #todo, do these need to be normalized?
     # Add the coresponding B entry for each element of data collected in the csv file
-    xDownSolution = np.tile(np.array([-1024, 0, 0],dtype=np.double),(xDown.shape[0],1))
-    xUpSolution = np.tile(np.array([1024, 0, 0],dtype=np.double),(xUp.shape[0],1))
-    yDownSolution = np.tile(np.array([0, -1024, 0],dtype=np.double),(yDown.shape[0],1))
-    yUpSolution = np.tile(np.array([0, 1024, 0],dtype=np.double),(yUp.shape[0],1))
-    zDownSolution = np.tile(np.array([0, 0, -1024],dtype=np.double),(zDown.shape[0],1))
-    zUpSolution = np.tile(np.array([0,0,1024],dtype=np.double),(zUp.shape[0],1))
+    xDownSolution = np.tile(np.array([-10, 0, 0],dtype=np.double),(xDown.shape[0],1))
+    xUpSolution = np.tile(np.array([10, 0, 0],dtype=np.double),(xUp.shape[0],1))
+    yDownSolution = np.tile(np.array([0, -10, 0],dtype=np.double),(yDown.shape[0],1))
+    yUpSolution = np.tile(np.array([0, 10, 0],dtype=np.double),(yUp.shape[0],1))
+    zDownSolution = np.tile(np.array([0, 0, -10],dtype=np.double),(zDown.shape[0],1))
+    zUpSolution = np.tile(np.array([0,0,10],dtype=np.double),(zUp.shape[0],1))
 
     #Combine All the solutions
     x = np.vstack((xDown,yDown,zDown,xUp,yUp,zUp)) # now a N X 4
