@@ -35,6 +35,11 @@
 #include "spi.h"
 #include "tim.h"
 #include "gpio.h"
+#include "lis3dsh.h"
+#include "display.h"
+#include "filter/filter.h"
+#include "accelerometer/accelerometer.h"
+#include "state_machine.h"
 
 /* USER CODE BEGIN Includes */
 
@@ -44,6 +49,7 @@
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
+float displayValue = 0;
 
 /* USER CODE END PV */
 
@@ -59,20 +65,26 @@ void SystemClock_Config(void);
 
 /* USER CODE END 0 */
 
-int main(void)
-{
+int main(void) {
+   /* USER CODE BEGIN 1 */
 
-  /* USER CODE BEGIN 1 */
+    //Initialize the accelerometer
+    initializeAccelerometer();
 
-  /* USER CODE END 1 */
+    //Initialize the filter
+    initializeFilter();
+    /* USER CODE END 1 */
+  
+    /* MCU Configuration----------------------------------------------------------*/
 
-  /* MCU Configuration----------------------------------------------------------*/
+    /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+    HAL_Init();
 
-  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
+    /* Configure the system clock */
+    SystemClock_Config();
 
-  /* Configure the system clock */
-  SystemClock_Config();
+    /* Initialize all configured peripherals */
+    MX_GPIO_Init();
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
@@ -92,10 +104,18 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
+    //        filter(pitch,roll);
 
+//		//Main program execution ins here.
+//    if(state == PITCH_MONITOR_STATE){
+//      //    displayDigits(displayValuePitch);
+//    }else if(state == ROLL_MONITOR_STATE){
+//      //    displayDigits(displayValuePitch);
+//    }else{
+//      //    displayDigits(0.0);
+//    }
   }
   /* USER CODE END 3 */
-
 }
 
 /** System Clock Configuration
@@ -126,8 +146,8 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
-  HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5);
-
+  //HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5);
+  HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_ACR_LATENCY_5WS);
   HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
 
   HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);

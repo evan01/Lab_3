@@ -14,53 +14,32 @@
 
 
 #include <stm32f407xx.h>
-#include <math.h>
+#include <arm_math.h>
 #include "arm_math.h"
-#include <stdlib.h>
-
-static float *in_oldestSample;
-static float *in_lastSamples;
-static float *out_oldestSample;
-static float *out_lastSamples;
-static float *sample;
 #define M_PI 3.14159265358979323846
+#include "../filter/filter.h"
+#include "stdlib.h"
 
 //Global Constants
-double roll = 0.00;
-double pitch = 0.00;
+float roll = 0.00;
+float pitch = 0.00;
 
-static float calibrationData[4][3] = {
+float32_t calibrationData[4][3] = {
     {0.9492311,-0.0124871,0.0021331},
     {-0.0420631,0.9805961,-0.0221681},
     {0.0011911,0.0137351,0.9881551},
     {-6.2797691,-2.6266551,-26.1443411}
 };
+float32_t output[3];
 
-static float filter_coef[5] = {0.2,0.2,0.2,0.2,0.2};
+arm_matrix_instance_f32 IN;
+arm_matrix_instance_f32 CAL;
+arm_matrix_instance_f32 OUT;
 
 LIS3DSH_InitTypeDef Acc_instance;
 LIS3DSH_DRYInterruptConfigTypeDef Acc_interruptConfig;
 
-
-/**
- * This is a filter function, with which we feed in the accelerometer values.
- * @param InputArray
- * @param OutputArray
- * @param coef
- * @param Length
- * @return
- */
-float* IIR_CMSIS(float* InputArray, float* OutputArray, int Length){
-    float pState[4] = {0.0,0.0,0.0,0.0};
-    int numStages = 1;
-    /* initialize the biquad filter */
-    arm_biquad_casd_df1_inst_f32 S1 = {numStages, pState, filter_coef};
-    /* process the input */
-
-    arm_biquad_cascade_df1_f32(&S1, InputArray, OutputArray, Length);
-    return OutputArray;
-}
-
+//int count = 0;
 
 // ***** CALLBACK FUNCTION *** gets called from stm32f4xx_it.c > stm32f4xx_hal_gpio.c, on INTERRUPT
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
@@ -68,59 +47,38 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
     float Buffer[3];
     float accX, accY, accZ;
 
-    //First get the filtered x,y,z readings from the accelerometer
+    //First get the x,y,z readings from the accelerometer
     LIS3DSH_ReadACC(&Buffer[0]);
-    accX = (float)Buffer[0];
-    accY = (float)Buffer[1];
-    accZ = (float)Buffer[2];
-	
-	printf("RAW----->\t\tX: %3f   Y: %3f   Z: %3f\n", accX, accY, accZ);
 
-    //Then calibrate these readings,using calibration values
-    float readings[3]= {
-        calibrationData[0][0]*accX + calibrationData[3][0],
-        calibrationData[1][1]*accY + calibrationData[3][1],
-        calibrationData[2][2]*accZ + calibrationData[3][2]
-    };
+    accX = Buffer[0];
+    accY = Buffer[1];
+    accZ = Buffer[2];
 
-    printf("CLBRT----->\t\tX: %3f   Y: %3f   Z: %3f\n", readings[0], readings[1], readings[2]);
+    //Then CALIBRATE the readings through matrix multiplication
+//	printf("\n\n\nRAW----->\t\tX: %3f   Y: %3f   Z: %3f\n", accX, accY, accZ);
+    float32_t readings[4] = {accX,accY,accZ,1};
+    arm_mat_init_f32(&IN, 1,4, (float32_t *)readings);
+    arm_mat_init_f32(&CAL, 4,3, (float32_t *)calibrationData);
+    arm_mat_init_f32(&OUT, 1,3, (float32_t *)output);
+    arm_mat_mult_f32(&IN,&CAL,&OUT);
+    accX = OUT.pData[0];
+    accY = OUT.pData[1];
+    accZ = OUT.pData[2];
 
-    float x_in[3] = {in_oldestSample[0], in_lastSamples[0], readings[0]};
-    float y_in[3] = {in_oldestSample[1], in_lastSamples[1], readings[1]};
-    float z_in[3] = {in_oldestSample[2], in_lastSamples[2], readings[2]};
+    //Then FILTER the readings.
+//    printf("CLBRT----->\t\tX: %3f   Y: %3f   Z: %3f\n", accX, accY, accZ);
+    struct SAMPLE f = filter(accX,accY,accZ);
 
-    float x_out[3] = {out_oldestSample[0], out_lastSamples[0], 0};
-    float y_out[3] = {out_oldestSample[1], out_lastSamples[1], 0};
-    float z_out[3] = {out_oldestSample[2], out_lastSamples[2], 0};
+    //Set global pitch and roll variables.
+//	printf("FILTER---->\t\tX: %3f   Y: %3f   Z: %3f\n\n",f.x,f.y,f.z);
+    pitch = (float)atan2f((-f.y), sqrtf(f.x * f.x + f.z * f.z)) * 180.0 / M_PI;
+    roll = (float)atan2f(f.x, f.z) * 180.0 / M_PI;
 
-    IIR_CMSIS(x_in,x_out,3);
-    IIR_CMSIS(y_in,y_out,3);
-    IIR_CMSIS(z_in,z_out,3);
-
-    accX = x_out[2];
-    accY = y_out[2];
-    accZ = z_out[2];
-
-	printf("FILTERED----->\t\tX: %3f   Y: %3f   Z: %3f\n", x_out[2], y_out[2], z_out[2]);
-	
-    /* creating the pitch roll values */
-    pitch = (atan2((- accY) , sqrt(accX* accX + accZ * accZ))*180.0)/M_PI;
-    roll = (atan2(accX , accZ)*180.0)/M_PI;
-
-    printf("PITCH: %f\nROLL:%f\n\n",pitch,roll);
-
+	printf("\t\t\t=======PITCH: %3f,ROLL:%3f\n\n",pitch,roll);
+//    printf("%d,%3f,%3f\n",count,accY,f.y);
     HAL_GPIO_TogglePin(GPIOD,GPIO_PIN_13);
-
-    //Store values for next time, free old memory
-    free(in_oldestSample);
-    free(out_oldestSample);
-    in_oldestSample = in_lastSamples;
-    in_lastSamples = sample;
-    out_oldestSample = out_lastSamples;
-    float out[3] = {accX,accY,accZ};
-    memcpy(out_lastSamples,out, sizeof(float)*3);
+//    count++;
 }
-
 
 
 
@@ -150,13 +108,6 @@ void initializeAccelerometer(void){
     //ENABLE the INTERRUPTS
     HAL_NVIC_EnableIRQ(EXTI0_IRQn);
     HAL_NVIC_SetPriority(EXTI0_IRQn, 4,4);
-
-    //Initialize History variables
-   in_oldestSample = malloc(sizeof(float)*3);
-   in_lastSamples = malloc(sizeof(float)*3);
-   out_oldestSample = malloc(sizeof(float)*3);
-   out_lastSamples = malloc(sizeof(float)*3);
-   sample = malloc(sizeof(float)*3);
 
 }
 
