@@ -9,7 +9,9 @@
 #include <stm32f407xx.h>
 
 /** FILTER PARAMETERS */
-static float filter_coef[5] = {0.8,0.1,0.08,0.01,0.01};
+static float filterX_coef[5] = {0.7995,0.1,0.0929,0.0238,-0.0097};
+static float filterY_coef[5] = {0.8526,0.1,0.0160,0.01233,-0.0055};
+static float filterZ_coef[5] = {0.7995,0.1,0.0929,0.0238,-0.0097};
 
 /**
  * This is a filter function, with which we feed in the accelerometer values.
@@ -19,7 +21,7 @@ static float filter_coef[5] = {0.8,0.1,0.08,0.01,0.01};
  * @param Length
  * @return
  */
-float* IIR_CMSIS(float* InputArray, float* OutputArray, uint32_t Length){
+float* IIR_CMSIS(float* InputArray, float* OutputArray, uint32_t Length, float* filter_coef){
     float pState[4] = {0.0,0.0,0.0,0.0};
     uint8_t numStages = 1;
     arm_biquad_casd_df1_inst_f32 S1 = {numStages, pState, filter_coef}; //Init filter
@@ -47,9 +49,9 @@ struct SAMPLE filter(float x, float y, float z){
     float z_out[3] = {out_oldestSample.z, out_lastSample.z, 0};
 
     //Filter
-    IIR_CMSIS(x_in,x_out,3);
-    IIR_CMSIS(y_in,y_out,3);
-    IIR_CMSIS(z_in,z_out,3);
+    IIR_CMSIS(x_in,x_out,3, filterX_coef);
+    IIR_CMSIS(y_in,y_out,3, filterY_coef);
+    IIR_CMSIS(z_in,z_out,3, filterZ_coef);
 
     in_oldestSample = in_lastSample;
     out_oldestSample= out_lastSample;
