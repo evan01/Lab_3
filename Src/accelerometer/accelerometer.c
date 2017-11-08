@@ -13,7 +13,6 @@
 */
 
 
-#include "LIS3DSH.h"
 #include <stm32f407xx.h>
 #include <arm_math.h>
 #include "arm_math.h"
