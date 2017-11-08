@@ -40,6 +40,8 @@ arm_matrix_instance_f32 OUT;
 LIS3DSH_InitTypeDef Acc_instance;
 LIS3DSH_DRYInterruptConfigTypeDef Acc_interruptConfig;
 
+//int count = 0;
+
 // ***** CALLBACK FUNCTION *** gets called from stm32f4xx_it.c > stm32f4xx_hal_gpio.c, on INTERRUPT
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 
@@ -54,7 +56,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
     accZ = Buffer[2];
 
     //Then CALIBRATE the readings through matrix multiplication
-	printf("\n\n\nRAW----->\t\tX: %3f   Y: %3f   Z: %3f\n", accX, accY, accZ);
+//	printf("\n\n\nRAW----->\t\tX: %3f   Y: %3f   Z: %3f\n", accX, accY, accZ);
     float32_t readings[4] = {accX,accY,accZ,1};
     arm_mat_init_f32(&IN, 1,4, (float32_t *)readings);
     arm_mat_init_f32(&CAL, 4,3, (float32_t *)calibrationData);
@@ -65,16 +67,18 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
     accZ = OUT.pData[2];
 
     //Then FILTER the readings.
-    printf("CLBRT----->\t\tX: %3f   Y: %3f   Z: %3f\n", accX, accY, accZ);
+//    printf("CLBRT----->\t\tX: %3f   Y: %3f   Z: %3f\n", accX, accY, accZ);
     struct SAMPLE f = filter(accX,accY,accZ);
 
     //Set global pitch and roll variables.
-	printf("FILTER---->\t\tX: %3f   Y: %3f   Z: %3f\n\n",f.x,f.y,f.z);
+//	printf("FILTER---->\t\tX: %3f   Y: %3f   Z: %3f\n\n",f.x,f.y,f.z);
     pitch = (float)atan2f((-f.y), sqrtf(f.x * f.x + f.z * f.z)) * 180.0 / M_PI;
     roll = (float)atan2f(f.x, f.z) * 180.0 / M_PI;
 
 	printf("\t\t\t=======PITCH: %3f,ROLL:%3f\n\n",pitch,roll);
+//    printf("%d,%3f,%3f\n",count,accY,f.y);
     HAL_GPIO_TogglePin(GPIOD,GPIO_PIN_13);
+//    count++;
 }
 
 
