@@ -76,8 +76,9 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 //	printf("FILTER---->\t\tX: %3f   Y: %3f   Z: %3f\n\n",f.x,f.y,f.z);
     pitch = (float)atan2f((-f.y), sqrtf(f.x * f.x + f.z * f.z)) * 180.0 / M_PI;
     roll = (float)atan2f(f.x, f.z) * 180.0 / M_PI;
-
-//	printf("\t\t\t=======PITCH: %3f,ROLL:%3f\n\n",pitch,roll);
+		pitch = (float)round(fabsf(pitch));
+		roll = (float)round(fabsf(roll));
+	printf("\t\t\t=======PITCH: %3f,ROLL:%3f\n\n",pitch,roll);
     HAL_GPIO_TogglePin(GPIOD,GPIO_PIN_13);
 	counter++;
 }

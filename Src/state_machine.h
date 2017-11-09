@@ -31,6 +31,8 @@ typedef enum {
 	LONG_PRESS
 } press_type_e;
 
+extern float value;
+
 extern press_type_e press_type;
 extern event_e event;
 extern state_e state;

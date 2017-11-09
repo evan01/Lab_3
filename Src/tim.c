@@ -1,198 +1,77 @@
-/**
-  ******************************************************************************
-  * File Name          : TIM.c
-  * Description        : This file provides code for the configuration
-  *                      of the TIM instances.
-  ******************************************************************************
-  ** This notice applies to any and all portions of this file
-  * that are not between comment pairs USER CODE BEGIN and
-  * USER CODE END. Other portions of this file, whether 
-  * inserted by the user or by software development tools
-  * are owned by their respective copyright owners.
-  *
-  * COPYRIGHT(c) 2017 STMicroelectronics
-  *
-  * Redistribution and use in source and binary forms, with or without modification,
-  * are permitted provided that the following conditions are met:
-  *   1. Redistributions of source code must retain the above copyright notice,
-  *      this list of conditions and the following disclaimer.
-  *   2. Redistributions in binary form must reproduce the above copyright notice,
-  *      this list of conditions and the following disclaimer in the documentation
-  *      and/or other materials provided with the distribution.
-  *   3. Neither the name of STMicroelectronics nor the names of its contributors
-  *      may be used to endorse or promote products derived from this software
-  *      without specific prior written permission.
-  *
-  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-  *
-  ******************************************************************************
-  */
-
-/* Includes ------------------------------------------------------------------*/
 #include "tim.h"
-
-/* USER CODE BEGIN 0 */
-
-/* USER CODE END 0 */
-
-TIM_HandleTypeDef htim2;
-TIM_HandleTypeDef htim3;
-
-/* TIM2 init function */
-void MX_TIM2_Init(void)
+TIM_HandleTypeDef tim4handle;
+TIM_OC_InitTypeDef pwmConf;
+TIM_Base_InitTypeDef tim4Config;
+uint32_t period = 42000;
+	
+void initTimer()
 {
-  TIM_ClockConfigTypeDef sClockSourceConfig;
-  TIM_MasterConfigTypeDef sMasterConfig;
+	tim4Config.Prescaler= (uint32_t)0;
+	tim4Config.CounterMode=TIM_COUNTERMODE_UP;
+	tim4Config.Period =period;
+	
 
-  htim2.Instance = TIM2;
-  htim2.Init.Prescaler = 625;
-  htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 10;
-  htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
-  {
-    _Error_Handler(__FILE__, __LINE__);
-  }
+	tim4handle.Instance = TIM4;
+	tim4handle.Init = tim4Config;
+	tim4handle.Channel = HAL_TIM_ACTIVE_CHANNEL_1;
+	
 
-  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
-  if (HAL_TIM_ConfigClockSource(&htim2, &sClockSourceConfig) != HAL_OK)
-  {
-    _Error_Handler(__FILE__, __LINE__);
-  }
-
-  sMasterConfig.MasterOutputTrigger = TIM_TRGO_UPDATE;
-  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-  if (HAL_TIMEx_MasterConfigSynchronization(&htim2, &sMasterConfig) != HAL_OK)
-  {
-    _Error_Handler(__FILE__, __LINE__);
-  }
-
-}
-/* TIM3 init function */
-void MX_TIM3_Init(void)
-{
-  TIM_ClockConfigTypeDef sClockSourceConfig;
-  TIM_MasterConfigTypeDef sMasterConfig;
-
-  htim3.Instance = TIM3;
-  htim3.Init.Prescaler = 0;
-  htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = 100;
-  htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
-  {
-    _Error_Handler(__FILE__, __LINE__);
-  }
-
-  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
-  if (HAL_TIM_ConfigClockSource(&htim3, &sClockSourceConfig) != HAL_OK)
-  {
-    _Error_Handler(__FILE__, __LINE__);
-  }
-
-  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
-  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-  if (HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig) != HAL_OK)
-  {
-    _Error_Handler(__FILE__, __LINE__);
-  }
-
+	pwmConf.OCMode = TIM_OCMODE_PWM1;
+	pwmConf.Pulse = 50; //start off
+	
+	/*ENABLE CLOCKS */
+	HAL_TIM_PWM_MspInit(&tim4handle);
+	HAL_TIM_PWM_Init(&tim4handle);
+	HAL_TIM_PWM_ConfigChannel(&tim4handle, &pwmConf, TIM_CHANNEL_1 );
+	HAL_TIM_PWM_ConfigChannel(&tim4handle, &pwmConf, TIM_CHANNEL_2 );
+	HAL_TIM_PWM_ConfigChannel(&tim4handle, &pwmConf, TIM_CHANNEL_3 );
+	HAL_TIM_PWM_ConfigChannel(&tim4handle, &pwmConf, TIM_CHANNEL_4 );
+	HAL_TIM_PWM_Start(&tim4handle, TIM_CHANNEL_1);
+	HAL_TIM_PWM_Start(&tim4handle, TIM_CHANNEL_2);
+	HAL_TIM_PWM_Start(&tim4handle, TIM_CHANNEL_3);
+	HAL_TIM_PWM_Start(&tim4handle, TIM_CHANNEL_4);
+	
+	
 }
 
-void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* tim_baseHandle)
+void setLedIntensity(uint32_t duty, uint32_t channel)
 {
-
-  if(tim_baseHandle->Instance==TIM2)
-  {
-  /* USER CODE BEGIN TIM2_MspInit 0 */
-
-  /* USER CODE END TIM2_MspInit 0 */
-    /* TIM2 clock enable */
-    __HAL_RCC_TIM2_CLK_ENABLE();
-
-    /* TIM2 interrupt Init */
-    HAL_NVIC_SetPriority(TIM2_IRQn, 0, 0);
-    HAL_NVIC_EnableIRQ(TIM2_IRQn);
-  /* USER CODE BEGIN TIM2_MspInit 1 */
-
-  /* USER CODE END TIM2_MspInit 1 */
-  }
-  else if(tim_baseHandle->Instance==TIM3)
-  {
-  /* USER CODE BEGIN TIM3_MspInit 0 */
-
-  /* USER CODE END TIM3_MspInit 0 */
-    /* TIM3 clock enable */
-    __HAL_RCC_TIM3_CLK_ENABLE();
-  /* USER CODE BEGIN TIM3_MspInit 1 */
-
-  /* USER CODE END TIM3_MspInit 1 */
-  }
+	pwmConf.Pulse=duty*tim4Config.Period/100;
+	HAL_TIM_PWM_ConfigChannel(&tim4handle, &pwmConf, channel );
+	HAL_TIM_PWM_Start(&tim4handle, TIM_CHANNEL_1);
 }
 
-void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
+void setLedIntensityPitch(uint32_t duty)
 {
-
-  if(tim_baseHandle->Instance==TIM2)
-  {
-  /* USER CODE BEGIN TIM2_MspDeInit 0 */
-
-  /* USER CODE END TIM2_MspDeInit 0 */
-    /* Peripheral clock disable */
-    __HAL_RCC_TIM2_CLK_DISABLE();
-
-    /* TIM2 interrupt Deinit */
-    HAL_NVIC_DisableIRQ(TIM2_IRQn);
-  /* USER CODE BEGIN TIM2_MspDeInit 1 */
-
-  /* USER CODE END TIM2_MspDeInit 1 */
-  }
-  else if(tim_baseHandle->Instance==TIM3)
-  {
-  /* USER CODE BEGIN TIM3_MspDeInit 0 */
-
-  /* USER CODE END TIM3_MspDeInit 0 */
-    /* Peripheral clock disable */
-    __HAL_RCC_TIM3_CLK_DISABLE();
-  /* USER CODE BEGIN TIM3_MspDeInit 1 */
-
-  /* USER CODE END TIM3_MspDeInit 1 */
-  }
-} 
-
-
-/* USER CODE BEGIN 1 */
-/**
-  * @brief  This function is executed in case of error occurrence.
-  * @param  None
-  * @retval None
-  */
-void _Error_Handler(char * file, int line)
-{
-  /* USER CODE BEGIN Error_Handler_Debug */
-	/* User can add his own implementation to report the HAL error return state */
-	while(1)
-	{
-	}
-  /* USER CODE END Error_Handler_Debug */ 
+	pwmConf.Pulse=duty*tim4Config.Period/100;
+	HAL_TIM_PWM_ConfigChannel(&tim4handle, &pwmConf, TIM_CHANNEL_4 );
+	HAL_TIM_PWM_ConfigChannel(&tim4handle, &pwmConf, TIM_CHANNEL_2 );
+	HAL_TIM_PWM_Start(&tim4handle, TIM_CHANNEL_4);
+	HAL_TIM_PWM_Start(&tim4handle, TIM_CHANNEL_2);
 }
-/* USER CODE END 1 */
 
-/**
-  * @}
-  */
+void setLedIntensityRoll(uint32_t duty)
+{
+	pwmConf.Pulse=duty*tim4Config.Period/100;
+	HAL_TIM_PWM_ConfigChannel(&tim4handle, &pwmConf, TIM_CHANNEL_3 );
+	HAL_TIM_PWM_ConfigChannel(&tim4handle, &pwmConf, TIM_CHANNEL_1 );
+	HAL_TIM_PWM_Start(&tim4handle, TIM_CHANNEL_3);
+	HAL_TIM_PWM_Start(&tim4handle, TIM_CHANNEL_1);
+}
 
-/**
-  * @}
-  */
 
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+void HAL_TIM_PWM_MspInit(TIM_HandleTypeDef* htim_pwm)
+{
+	__TIM4_CLK_ENABLE();
+	
+	//GPIO CONFIG
+	__GPIOD_CLK_ENABLE();
+	GPIO_InitTypeDef dpins_Init;
+	dpins_Init.Pin = GPIO_PIN_12 | GPIO_PIN_13 |GPIO_PIN_14 |GPIO_PIN_15;	//D12 is green LED
+	dpins_Init.Mode= GPIO_MODE_AF_PP; //hopefully doesnt burn LEDs xD
+	//dpins_Init.Pull= GPIO_NOPULL;
+	dpins_Init.Speed= GPIO_SPEED_FREQ_MEDIUM;
+	dpins_Init.Alternate = GPIO_AF2_TIM4;
+	HAL_GPIO_Init(GPIOD,&dpins_Init);
+	
+}

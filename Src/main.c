@@ -20,7 +20,13 @@ float displayValue = 0;
 void SystemClock_Config(void);
 int SysTickCount;
 
-
+uint32_t judgeDuty(uint32_t target, float current)
+{
+	float rval;
+	rval = 100.0*((fabsf((float)target-(float)current))/180.0);
+	return (uint32_t) rval;
+	
+}
 
 int infiniteLoop(float value, int timerValue){
 	
@@ -30,6 +36,8 @@ int infiniteLoop(float value, int timerValue){
 	return 0;
 }
 int main(void) {
+	
+		initTimer();
     //Initialize the accelerometer
     initializeAccelerometer();
 
@@ -43,23 +51,17 @@ int main(void) {
     MX_GPIO_Init();
 //		MX_TIM2_Init();
 //		HAL_TIM_Base_Start_IT(&htim2);
-
+		int duty = 0;
     while (1){
 			int timerValue = 24;
 			//Main program execution ins here.
-//			if(state == PITCH_MONITOR_STATE){
-//				if(pitch <0){
-//					infiniteLoop((int)-pitch, timerValue);
-//				}else{
-//					infiniteLoop((int)pitch, timerValue);
-//				}
-//			}else if(state == ROLL_MONITOR_STATE){
-//				if(roll <0){
-//					infiniteLoop((int)-roll, timerValue);
-//				}else{
-//					infiniteLoop((int)roll, timerValue);
-//				}
-//			}
+			if(state == PITCH_MONITOR_STATE){
+				infiniteLoop(pitch, timerValue);
+//				printf("pitch %f\n", (float)pitch);
+			}else if(state == ROLL_MONITOR_STATE){
+				infiniteLoop(roll, timerValue);
+//				printf("roll %f\n", (float)roll);
+			}
 //			else if(state == START_STATE){
 //				infiniteLoop(0000, timerValue);
 //			}else if(state == SLEEP_STATE){
@@ -80,9 +82,18 @@ int main(void) {
 //			int ui_roll = abs(i_roll);
 //			int ui_pitch = abs(i_pitch);
 //			printf("roll: %d, pitch: %d\n", ui_roll, ui_pitch);
-			if(state == START_STATE){
-				infiniteLoop(8888, timerValue);
-			}
+//			if(state == START_STATE){
+//				infiniteLoop(8888, timerValue);
+//			}
+			
+//			setLedIntensity(duty, 1);
+//			setLedIntensity(duty, 2);
+//			setLedIntensity(duty, 3);
+//			setLedIntensity(duty, 4);
+//			duty++;
+//			if(duty == 100){
+//				duty = 0;
+//			}
 
 			readInput();
 	

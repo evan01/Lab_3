@@ -12,7 +12,8 @@ int roll_pointer = 0;
 int target_pitch;
 char pitch_buf[10];
 int pitch_pointer = 0;
-
+float value = 0.000;
+float placeholder_value = 0.000;
 
 state_e state = START_STATE;
 state_e next_state;
@@ -111,6 +112,7 @@ int set_state(){
 		roll_pointer = 0;
 		pitch_pointer = 0;
 		state = ENTER_ROLL_STATE;
+//		sscanf(roll_buf, "%f", &placeholder_value);
 	}
 	if(press_type == LONG_PRESS){
 		if(event == STAR){
