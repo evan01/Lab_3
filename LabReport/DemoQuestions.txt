@@ -4,6 +4,18 @@ Code and HW Concepts
 
 1. Accerometer Configuration, and GPIO Interrupt Settings
 
+Essentially, you have to 
+	-enable the hardware pin, 
+	-enable accelerometer in intterupt mode
+	-set accelerometer to work at propper rate
+	(THEN)
+	- a 'data ready' flag is set on Pin E0?
+	- which generates an interrupt.
+	- Which calls an interrupt handler
+	- which we overwrite the handler inside of accelerometer file
+
+There is a vector table in startup_stm32f07xx.s that maps a pin to a handler.
+
 -First you need to ENABLE the GPIO pinE0
 gpio.c
 		-GPIO_InitStruct.Pin = GPIO_PIN_0;
@@ -17,5 +29,12 @@ gpio.c
 		Initialize(struct)
 		Specify interrupt Config
 		Enable the Interrupt w/ priority
--T
-		
+
+-Then in stm32f4xx_it.c
+	void EXTI0_IRQHandler(void){
+		//This gets called when the peripheral is ready.
+    		//Call the HAL interrupt function...
+    		HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
+	}
+
+2. 	
