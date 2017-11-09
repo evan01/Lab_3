@@ -2,9 +2,9 @@
 #include "stm32f4xx_hal.h"
 #include "gpio.h"
 
-int counter_display = 0;
 static int DisplayValues[4] = {0,0,0,0};
 int DecimalLocation[4] = {0,0,0,0};
+int counter_display = 0;
 
 //SAMPLE NUMBER = {A,B,C,D,E,F,G}
 int NUMBER_0[7] = {1,1,1,1,1,1,0};
@@ -89,7 +89,16 @@ int activatePanel(int panelNumber){
     }
 		return 0;
 }
-
+int resetDisplay(){
+			HAL_GPIO_WritePin(GPIOE, GPIO_PIN_7, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(GPIOE, GPIO_PIN_9, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(GPIOE, GPIO_PIN_10, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(GPIOE, GPIO_PIN_11, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(GPIOE, GPIO_PIN_12, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(GPIOE, GPIO_PIN_13, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(GPIOE, GPIO_PIN_14, GPIO_PIN_RESET);
+}
 /*
 	Activates the corresponding anode segments depending on the given pins and decimal boolean
 */
@@ -152,18 +161,35 @@ int setDisplay(int *pins, int decimal, int panelNumber){
 
 int sendValuesToDisplay(int panelToDisplay){
 	//Given an integer to display, we want to enable the correct pins.
+	
     int DISPLAY_NUMBER_VALUE = DisplayValues[panelToDisplay]; //Get integer value to display
-
 		setDisplay(NUMBERS[DISPLAY_NUMBER_VALUE], DecimalLocation[panelToDisplay], panelToDisplay); //knowing pings, whether to show a decimal, and the display
 		return 0;
 }
 
-int displayDigits(float value){
+int displayDigits(float value, int panel){
 	//First thing is to load the values for RMS VOLTAGE into the display values
 	char output[4];
 	snprintf(output, 50, "%f", value);
-	getDisplayValues(output); //Sets global DisplayValues and Decimal location arrays
-	
+	int location = 0;
+	int index = 0;
+	int i = 0;
+	for (i = 0; i < 5; ++i) {
+		//Find the location of the decimal values
+		if(output[i] == '.'){
+			location = i-1;
+			continue;
+		}
+		DisplayValues[index]  = output[i] - '0';
+		index++;
+	}
+	DecimalLocation[location] = 1;
+	for(i = 0; i < 4; ++i) {
+		if(i != location){
+			DecimalLocation[i] = 0;
+		}
+	}
+//	getDisplayValues(output); //Sets global DisplayValues and Decimal location arrays
 	sendValuesToDisplay(counter_display);
 	counter_display++;
 	/*

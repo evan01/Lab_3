@@ -35,4 +35,10 @@ extern press_type_e press_type;
 extern event_e event;
 extern state_e state;
 
+extern char pitch_buf[10];
+extern char roll_buf[10];
+
+int updateState(int digit, int duration);
+
+
 #endif

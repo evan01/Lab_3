@@ -66,11 +66,3 @@ struct SAMPLE filter(float x, float y, float z){
     return out_lastSample;
     //    printf("FILTERED----->\t\tPitch: %3f   Roll: %3f\n", x_out[2], y_out[2]);
 }
-
-void initializeFilter(void){
-    //Initialize History variables
-//    in_oldestSample = malloc(sizeof(float)*2);
-//    in_lastSample = malloc(sizeof(float)*2);
-//    out_oldestSample = malloc(sizeof(float)*2);
-//    out_lastSamples = malloc(sizeof(float)*2);
-}

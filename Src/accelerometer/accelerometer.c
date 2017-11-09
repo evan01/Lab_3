@@ -58,7 +58,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	if(counter < 1100)
 		//printf("%3f,%3f,%3f\n", accX, accY, accZ);
 		counter = 0;
-	printf("\n\n\nRAW----->\t\tX: %3f   Y: %3f   Z: %3f\n", accX, accY, accZ);
+//	printf("\n\n\nRAW----->\t\tX: %3f   Y: %3f   Z: %3f\n", accX, accY, accZ);
     float32_t readings[4] = {accX,accY,accZ,1};
     arm_mat_init_f32(&IN, 1,4, (float32_t *)readings);
     arm_mat_init_f32(&CAL, 4,3, (float32_t *)calibrationData);
@@ -73,11 +73,11 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
     struct SAMPLE f = filter(accX,accY,accZ);
 
     //Set global pitch and roll variables.
-	printf("FILTER---->\t\tX: %3f   Y: %3f   Z: %3f\n\n",f.x,f.y,f.z);
+//	printf("FILTER---->\t\tX: %3f   Y: %3f   Z: %3f\n\n",f.x,f.y,f.z);
     pitch = (float)atan2f((-f.y), sqrtf(f.x * f.x + f.z * f.z)) * 180.0 / M_PI;
     roll = (float)atan2f(f.x, f.z) * 180.0 / M_PI;
 
-	printf("\t\t\t=======PITCH: %3f,ROLL:%3f\n\n",pitch,roll);
+//	printf("\t\t\t=======PITCH: %3f,ROLL:%3f\n\n",pitch,roll);
     HAL_GPIO_TogglePin(GPIOD,GPIO_PIN_13);
 	counter++;
 }
@@ -92,7 +92,7 @@ void initializeAccelerometer(void){
     Acc_instance.Axes_Enable				= LIS3DSH_XYZ_ENABLE;
     Acc_instance.AA_Filter_BW				= LIS3DSH_AA_BW_50;
     Acc_instance.Full_Scale					= LIS3DSH_FULLSCALE_2;
-    Acc_instance.Power_Mode_Output_DataRate		= LIS3DSH_DATARATE_25; //todo why is this 25?
+    Acc_instance.Power_Mode_Output_DataRate		= LIS3DSH_DATARATE_50; //todo why is this 25?
     Acc_instance.Self_Test					= LIS3DSH_SELFTEST_NORMAL;
     Acc_instance.Continous_Update   = LIS3DSH_ContinousUpdate_Enabled;
 

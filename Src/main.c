@@ -7,8 +7,12 @@
 #include "filter/filter.h"
 #include "accelerometer/accelerometer.h"
 #include "state_machine.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include "tim.h"
 
-//#include "display.h"
+#include "keypad/keypad.h"
 
 /* Private variables ---------------------------------------------------------*/
 float displayValue = 0;
@@ -17,12 +21,17 @@ void SystemClock_Config(void);
 int SysTickCount;
 
 
+
+int infiniteLoop(float value, int timerValue){
+	
+	//display the digits
+	displayDigits(value, timerValue%4);
+
+	return 0;
+}
 int main(void) {
     //Initialize the accelerometer
     initializeAccelerometer();
-
-    //Initialize the filter
-    initializeFilter();
 
     /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
     HAL_Init();
@@ -32,19 +41,51 @@ int main(void) {
 
     /* Initialize all configured peripherals */
     MX_GPIO_Init();
+//		MX_TIM2_Init();
+//		HAL_TIM_Base_Start_IT(&htim2);
 
     while (1){
-//        filter(pitch,roll);
+			int timerValue = 24;
+			//Main program execution ins here.
+//			if(state == PITCH_MONITOR_STATE){
+//				if(pitch <0){
+//					infiniteLoop((int)-pitch, timerValue);
+//				}else{
+//					infiniteLoop((int)pitch, timerValue);
+//				}
+//			}else if(state == ROLL_MONITOR_STATE){
+//				if(roll <0){
+//					infiniteLoop((int)-roll, timerValue);
+//				}else{
+//					infiniteLoop((int)roll, timerValue);
+//				}
+//			}
+//			else if(state == START_STATE){
+//				infiniteLoop(0000, timerValue);
+//			}else if(state == SLEEP_STATE){
+//				resetDisplay();
+//			}else if(state == ENTER_ROLL_STATE){
+//				float f;
+//				sscanf(roll_buf,"%f",&f);
+//				infiniteLoop(f, timerValue);
+//			}else if(state == ENTER_PITCH_STATE){
+//				float f;
+//				sscanf(pitch_buf,"%f",&f);
+//				infiniteLoop(f, timerValue);
+//			}
 
-//		//Main program execution ins here.
-//    if(state == PITCH_MONITOR_STATE){
-//      //    displayDigits(displayValuePitch);
-//    }else if(state == ROLL_MONITOR_STATE){
-//      //    displayDigits(displayValuePitch);
-//    }else{
-//      //    displayDigits(0.0);
-//    }
 
+//			int i_roll = round(roll);
+//			int i_pitch = round(pitch);
+//			int ui_roll = abs(i_roll);
+//			int ui_pitch = abs(i_pitch);
+//			printf("roll: %d, pitch: %d\n", ui_roll, ui_pitch);
+			if(state == START_STATE){
+				infiniteLoop(8888, timerValue);
+			}
+
+			readInput();
+	
     }
 
 }
@@ -89,6 +130,9 @@ void SystemClock_Config(void){
 
 
 
+/* USER CODE BEGIN 0 */
+
+/* USER CODE END 0 */
 
 
 #ifdef USE_FULL_ASSERT
