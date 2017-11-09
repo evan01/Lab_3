@@ -47,6 +47,10 @@
 
 void SysTick_Handler(void);
 void EXTI0_IRQHandler(void);
+	 
+extern int SysTickCount;
+extern int INTERUPTCOUNT;
+extern int keypad_counter;
 
 #ifdef __cplusplus
 }

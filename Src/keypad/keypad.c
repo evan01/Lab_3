@@ -3,6 +3,7 @@
 #include "gpio.h"
 #include "../state_machine.h"
 #include "keypad.h"
+#include "stm32f4xx_it.h"
 
 int columns[3] = {0,0,0};
 int rows[4] = {0,0,0,0};
@@ -10,7 +11,6 @@ int column = 0;
 int row = 0;
 int keypressed = 0;
 int key = 0;
-int key_counter = 0;
 
 
 void switchIO(){
@@ -122,10 +122,8 @@ int readInput(void){
 	int a = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_4);
 	int b = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_5);
 	int c = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_0);
-//	printf("PC4: %d, PC5: %d, PB0: %d\n", a, b, c);
 	if(a == 0 || b == 0 || c == 0){
 		keypressed = 1;
-//		printf("Going to next step\n");
 		if(a == 0){
 			column = 1;
 		}else if(b == 0){
@@ -133,7 +131,6 @@ int readInput(void){
 		}else if(c == 0){
 			column = 3;
 		}
-//		printf("column: %d\n", column);
 
 		
 		switchIO();
@@ -143,7 +140,6 @@ int readInput(void){
 		int f = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_14);
 		int g = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_15);
 
-//		printf("PB12: %d, PB13: %d, PB14: %d, PB15: %d\n", d, e, f, g);
 	
 		
 		if(d == 0){
@@ -155,32 +151,29 @@ int readInput(void){
 		}else if(g == 0){
 			row = 4;
 		}
-//		printf("row: %d\n", row);
 		key = getPressedKey(column, row);
 	
 		keypressed = 1;
-		key_counter++;
-//		printf("key: %d, counter: %d, keypressed: %d\n", key, key_counter, keypressed);
-		
 		resetIO();
 	}else{
 		if(keypressed == 1){
 			int duration;
-			if(key_counter <= 10000){
+			if(keypad_counter == 0){
 				duration = 0;
-			}else if(key_counter > 10000 && key_counter <= 25000){
+			}else if(keypad_counter == 1){
 				duration = 1;
-			}else if(key_counter > 25000 && key_counter <= 40000){
+			}else if(keypad_counter == 2){
 				duration = 2;
-			}else if(key_counter > 40000){
+			}else if(keypad_counter >= 3){
 				duration = 3;
 			}
 			
-			printf("key: %d, duration: %d, counter: %d\n", key, duration, key_counter);
+			printf("key: %d, duration: %d, counter: %d\n", key, duration, keypad_counter);
 			updateState(key, duration);
 			keypressed = 0;
-			key_counter = 0;
+			keypad_counter = 0;
 		}
+		keypad_counter = 0;
 		
 	}
 	return 0;

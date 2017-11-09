@@ -40,8 +40,9 @@
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
-extern int SysTickCount;
-extern int INTERUPTCOUNT;
+int SysTickCount;
+int INTERUPTCOUNT;
+int keypad_counter;
 /******************************************************************************/
 /*            Cortex-M4 Processor Interruption and Exception Handlers         */ 
 /******************************************************************************/
@@ -56,7 +57,13 @@ void SysTick_Handler(void)
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
   HAL_SYSTICK_IRQHandler();
+//	printf("Systick: %d\n", SysTickCount);
+//	printf("%d\n", SysTickCount);
 	SysTickCount ++;
+	if(SysTickCount == 1000){
+		SysTickCount = 0;
+		keypad_counter++;
+	}
   /* USER CODE BEGIN SysTick_IRQn 1 */
 
   /* USER CODE END SysTick_IRQn 1 */

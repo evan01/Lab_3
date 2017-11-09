@@ -1,4 +1,6 @@
 #include "tim.h"
+
+// Obtained from https://github.com/owen12123/MicroProcessorSystem/blob/master/LAB3_Accelerometer/lab3base/lab3_stm32f4cube_base_project/timer.c
 TIM_HandleTypeDef tim4handle;
 TIM_OC_InitTypeDef pwmConf;
 TIM_Base_InitTypeDef tim4Config;
@@ -6,7 +8,7 @@ uint32_t period = 42000;
 	
 void initTimer(void)
 {
-	tim4Config.Prescaler= (uint32_t)0;
+	tim4Config.Prescaler= (uint32_t)2;
 	tim4Config.CounterMode=TIM_COUNTERMODE_UP;
 	tim4Config.Period =period;
 	

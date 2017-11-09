@@ -17,7 +17,6 @@ float displayValue = 0;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 
-int SysTickCount;
 
 uint32_t judgeDuty(uint32_t target, float current) {
     float rval;
