@@ -21,7 +21,7 @@ int SysTickCount;
 
 uint32_t judgeDuty(uint32_t target, float current) {
     float rval;
-    rval = 100.0 * ((fabsf((float) target - (float) current)) / 180.0);
+    rval = 200.0 * ((fabsf((float) target - (float) current)) / 180.0);
     return (uint32_t) rval;
 
 }
