@@ -27,58 +27,55 @@ uint32_t judgeDuty(uint32_t target, float current) {
 }
 
 int display(int value) {
-	 //display the digits
-	if(value == 1){
+    //display the digits
+    if (value == 1) {
         return displayDigits(pitch);
-    } else if(value == 0) {
-		return displayDigits(roll);
-    }else {
-		//In sleep state
-		return displayDigits(value);
-	}
+    } else if (value == 0) {
+        return displayDigits(roll);
+    } else {
+        //In sleep state
+        return displayDigits(value);
+    }
 }
 
-int infiniteLoop(){
+int infiniteLoop() {
+    static uint32_t duty = 0;
     //Main program execution ins here.
     if (state == PITCH_MONITOR_STATE) {
         //printf("pitch %f\n", (float)pitch);
         display(1);
+        uint32_t intensity = judgeDuty(target_pitch, pitch);
+        setLedIntensityPitch(intensity);
     } else if (state == ROLL_MONITOR_STATE) {
         display(0);
-    }
-    else if(state == START_STATE){
+        uint32_t intensity = judgeDuty(target_roll, roll);
+        setLedIntensityPitch(intensity);
+    } else if (state == START_STATE) {
         display(8888);
-    }else if(state == SLEEP_STATE){
+    } else if (state == SLEEP_STATE) {
         resetDisplay();
 //    }
-			}else if(state == ENTER_ROLL_STATE){
-				float f;
-				sscanf(roll_buf,"%f",&f);
-				display((int)f);
-			}else if(state == ENTER_PITCH_STATE){
-				float f;
-				sscanf(pitch_buf,"%f",&f);
-				display((int)f);
-			}
+    } else if (state == ENTER_ROLL_STATE) {
+        float f;
+        sscanf(roll_buf, "%f", &f);
+        display((int) f);
+    } else if (state == ENTER_PITCH_STATE) {
+        float f;
+        sscanf(pitch_buf, "%f", &f);
+        display((int) f);
+    }
+
+//			setLedIntensityPitch(duty);
+
+    setLedIntensityRoll(0);
+    //setLedIntensity(duty, 3);
+    //setLedIntensity(duty, 4);
+    duty += 10;
+    if (duty == 100) {
+        duty = 0;
+    }
 
 
-//			int i_roll = round(roll);
-//			int i_pitch = round(pitch);
-//			int ui_roll = abs(i_roll);
-//			int ui_pitch = abs(i_pitch);
-//			printf("roll: %d, pitch: %d\n", ui_roll, ui_pitch);
-//			if(state == START_STATE){
-//				display(8888, timerValue);
-//			}
-
-//			setLedIntensity(duty, 1);
-//			setLedIntensity(duty, 2);
-//			setLedIntensity(duty, 3);
-//			setLedIntensity(duty, 4);
-//			duty++;
-//			if(duty == 100){
-//				duty = 0;
-//			}
 }
 
 int main(void) {
@@ -97,7 +94,7 @@ int main(void) {
     MX_GPIO_Init();
 //		MX_TIM2_Init();
 //		HAL_TIM_Base_Start_IT(&htim2);
-    int duty = 0;
+
     while (1) {
 
         infiniteLoop();
@@ -167,7 +164,7 @@ void assert_failed(uint8_t* file, uint32_t line)
   /* User can add his own implementation to report the file name and line number,
     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
   /* USER CODE END 6 */
-	printf("ERROR");
+    printf("ERROR");
 }
 
 #endif

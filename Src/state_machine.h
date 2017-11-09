@@ -40,6 +40,9 @@ extern state_e state;
 extern char pitch_buf[10];
 extern char roll_buf[10];
 
+extern int target_roll;
+extern int target_pitch;
+
 int updateState(int digit, int duration);
 
 
