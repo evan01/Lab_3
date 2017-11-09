@@ -137,8 +137,8 @@ void MX_GPIO_Init(void)
 //  HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
   GPIO_InitTypeDef dpins_Init;
-  dpins_Init.Pin = GPIO_PIN_12 | GPIO_PIN_13 |GPIO_PIN_14 |GPIO_PIN_15;	//D12 is green LED
-  dpins_Init.Mode= GPIO_MODE_AF_PP; //hopefully doesnt burn LEDs xD
+  dpins_Init.Pin = GPIO_PIN_12 | GPIO_PIN_13 |GPIO_PIN_14 |GPIO_PIN_15;
+  dpins_Init.Mode= GPIO_MODE_AF_PP;
   //dpins_Init.Pull= GPIO_NOPULL;
   dpins_Init.Speed= GPIO_SPEED_FREQ_MEDIUM;
   dpins_Init.Alternate = GPIO_AF2_TIM4;
