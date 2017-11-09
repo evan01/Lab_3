@@ -132,7 +132,7 @@ int set_state(){
 			roll_pointer = 0;
 			pitch_pointer = 0;
 		}else{
-			next_state = SLEEP_STATE;
+			next_state = state;
 		}
 	}else{
 		switch(state){
@@ -154,9 +154,15 @@ int set_state(){
 					clearingLastDigit(0);
 				}else{
 					//add number to roll variable
-					printf("Adding digit %d\n", event-1);
+					int digit;
+					if(event == NUMBER_0){
+						digit = 0;
+					}else{
+						digit = event-1;
+					}
+					printf("Adding digit %d\n", digit);
 					next_state = ENTER_ROLL_STATE;
-					updateAngle((event-1), 0);
+					updateAngle(digit, 0);
 				}
 				break;
 			case ENTER_PITCH_STATE:
@@ -172,9 +178,15 @@ int set_state(){
 					clearingLastDigit(1);
 				}else{
 					//add number to pitch variable
-					printf("Adding digit %d\n", event-1);
+					int digit;
+					if(event == NUMBER_0){
+						digit = 0;
+					}else{
+						digit = event-1;
+					}
+					printf("Adding digit %d\n", digit);
 					next_state = ENTER_PITCH_STATE;
-					updateAngle(event-1, 1);
+					updateAngle(digit, 1);
 				}
 				break;
 			case PITCH_MONITOR_STATE:
