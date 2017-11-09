@@ -11,33 +11,37 @@
 #include <stdlib.h>
 #include <math.h>
 #include "tim.h"
-
 #include "keypad/keypad.h"
 
 /* Private variables ---------------------------------------------------------*/
 float displayValue = 0;
+
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
+
 int SysTickCount;
 
-uint32_t judgeDuty(uint32_t target, float current)
-{
-	float rval;
-	rval = 100.0*((fabsf((float)target-(float)current))/180.0);
-	return (uint32_t) rval;
-	
+uint32_t judgeDuty(uint32_t target, float current) {
+    float rval;
+    rval = 100.0 * ((fabsf((float) target - (float) current)) / 180.0);
+    return (uint32_t) rval;
+
 }
 
-int infiniteLoop(float value, int timerValue){
-	
-	//display the digits
-	displayDigits(value, timerValue%4);
-
-	return 0;
+int infiniteLoop(int value) {
+	 //display the digits
+	if(value == 1){
+        displayDigits(pitch);
+    } else {
+		displayDigits(roll);
+    }
+    
+    return 0;
 }
+
 int main(void) {
-	
-		initTimer();
+
+    initTimer();
     //Initialize the accelerometer
     initializeAccelerometer();
 
@@ -51,17 +55,15 @@ int main(void) {
     MX_GPIO_Init();
 //		MX_TIM2_Init();
 //		HAL_TIM_Base_Start_IT(&htim2);
-		int duty = 0;
-    while (1){
-			int timerValue = 24;
-			//Main program execution ins here.
-			if(state == PITCH_MONITOR_STATE){
-				infiniteLoop(pitch, timerValue);
-//				printf("pitch %f\n", (float)pitch);
-			}else if(state == ROLL_MONITOR_STATE){
-				infiniteLoop(roll, timerValue);
-//				printf("roll %f\n", (float)roll);
-			}
+    int duty = 0;
+    while (1) {
+        //Main program execution ins here.
+        if (state == PITCH_MONITOR_STATE) {
+			//printf("pitch %f\n", (float)pitch);
+            infiniteLoop(1);
+        } else if (state == ROLL_MONITOR_STATE) {
+            infiniteLoop(0);
+        }
 //			else if(state == START_STATE){
 //				infiniteLoop(0000, timerValue);
 //			}else if(state == SLEEP_STATE){
@@ -85,7 +87,7 @@ int main(void) {
 //			if(state == START_STATE){
 //				infiniteLoop(8888, timerValue);
 //			}
-			
+
 //			setLedIntensity(duty, 1);
 //			setLedIntensity(duty, 2);
 //			setLedIntensity(duty, 3);
@@ -95,8 +97,8 @@ int main(void) {
 //				duty = 0;
 //			}
 
-			readInput();
-	
+        readInput();
+
     }
 
 }
@@ -104,7 +106,7 @@ int main(void) {
 /** System Clock Configuration
 	The clock source is configured as external at 168 MHz HCLK
 */
-void SystemClock_Config(void){
+void SystemClock_Config(void) {
 
     RCC_OscInitTypeDef RCC_OscInitStruct;
     RCC_ClkInitTypeDef RCC_ClkInitStruct;
@@ -123,15 +125,15 @@ void SystemClock_Config(void){
     RCC_OscInitStruct.PLL.PLLQ = 7;
     HAL_RCC_OscConfig(&RCC_OscInitStruct);
 
-    RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_SYSCLK|RCC_CLOCKTYPE_PCLK1
-                                  |RCC_CLOCKTYPE_PCLK2;
+    RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1
+                                  | RCC_CLOCKTYPE_PCLK2;
     RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
     RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
     RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
     RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
     //HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5);
     HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_ACR_LATENCY_5WS);
-    HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
+    HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq() / 1000);
 
     HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
 
@@ -161,7 +163,7 @@ void assert_failed(uint8_t* file, uint32_t line)
   /* User can add his own implementation to report the file name and line number,
     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
   /* USER CODE END 6 */
-
+	printf("ERROR");
 }
 
 #endif

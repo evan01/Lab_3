@@ -1,0 +1,21 @@
+DEMO QUESTIONS
+
+Code and HW Concepts
+
+1. Accerometer Configuration, and GPIO Interrupt Settings
+
+-First you need to ENABLE the GPIO pinE0
+gpio.c
+		-GPIO_InitStruct.Pin = GPIO_PIN_0;
+		-GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+		-GPIO_InitStruct.Pull = GPIO_NOPULL;
+		-HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+
+-Then you need to Configure the accerlometer in the init
+	initializeAccelerometer(){
+		CreateConfStruct
+		Initialize(struct)
+		Specify interrupt Config
+		Enable the Interrupt w/ priority
+-T
+		

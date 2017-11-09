@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include "stm32f4xx_hal.h"
-#include "gpio.h"
+//#include "gpio.h"
+//#include "stm32f4xx_hal_gpio.h"
+#include <stm32f407xx.h>
+
 
 static int DisplayValues[4] = {0,0,0,0};
 int DecimalLocation[4] = {0,0,0,0};
@@ -35,27 +38,27 @@ int *NUMBERS[10] = {
 /*
 	Gets all the digits and dots to be displayed from the number array
 */
-int getDisplayValues(const char *output){
-	//Assume that there will always be one decimal, and that it's not the first element... 'no .0002'
-	int location = 0;
-	int index = 0;
-	for (int i = 0; i < 5; ++i) {
-		//Find the location of the decimal values
-		if(output[i] == '.'){
-			location = i-1;
-			continue;
-		}
-		DisplayValues[index]  = output[i] - '0';
-		index++;
-	}
-	DecimalLocation[location] = 1;
-	for(int i = 0; i < 4; ++i) {
-		if(i != location){
-			DecimalLocation[i] = 0;
-		}
-	}
-	return 0;
-}
+//int getDisplayValues(const char *output){
+//	//Assume that there will always be one decimal, and that it's not the first element... 'no .0002'
+//	int location = 0;
+//	int index = 0;
+//	for (int i = 0; i < 5; ++i) {
+//		//Find the location of the decimal values
+//		if(output[i] == '.'){
+//			location = i-1;
+//			continue;
+//		}
+//		DisplayValues[index]  = output[i] - '0';
+//		index++;
+//	}
+//	DecimalLocation[location] = 1;
+//	for(int i = 0; i < 4; ++i) {
+//		if(i != location){
+//			DecimalLocation[i] = 0;
+//		}
+//	}
+//	return 0;
+//}
 
 /*
 	Activates the common cathode of the corresponding panel
@@ -89,7 +92,7 @@ int activatePanel(int panelNumber){
     }
 		return 0;
 }
-int resetDisplay(){
+void resetDisplay(void){
 			HAL_GPIO_WritePin(GPIOE, GPIO_PIN_7, GPIO_PIN_RESET);
 			HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_RESET);
 			HAL_GPIO_WritePin(GPIOE, GPIO_PIN_9, GPIO_PIN_RESET);
@@ -102,7 +105,7 @@ int resetDisplay(){
 /*
 	Activates the corresponding anode segments depending on the given pins and decimal boolean
 */
-int setDisplay(int *pins, int decimal, int panelNumber){
+int setDisplay(const int *pins, int decimal, int panelNumber){
 	
 	//Activates pins first
 	if (pins[0] == 1) {
@@ -167,7 +170,14 @@ int sendValuesToDisplay(int panelToDisplay){
 		return 0;
 }
 
-int displayDigits(float value, int panel){
+int displayDigits(float value){
+    static toggle = 0;
+    if (toggle){
+        toggle = 0;
+    } else{
+        toggle = 1;
+        return 0;
+    }
 	//First thing is to load the values for RMS VOLTAGE into the display values
 	char output[4];
 	snprintf(output, 50, "%f", value);

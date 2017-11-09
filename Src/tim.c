@@ -4,7 +4,7 @@ TIM_OC_InitTypeDef pwmConf;
 TIM_Base_InitTypeDef tim4Config;
 uint32_t period = 42000;
 	
-void initTimer()
+void initTimer(void)
 {
 	tim4Config.Prescaler= (uint32_t)0;
 	tim4Config.CounterMode=TIM_COUNTERMODE_UP;

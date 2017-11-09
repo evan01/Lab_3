@@ -49,7 +49,7 @@ int printState(state_e state){
 	return 0;
 }
 
-int updateAngle(event_e event, int pitch_roll){
+void updateAngle(event_e event, int pitch_roll){
 	if(pitch_roll == 0){
 		sprintf(roll_buf + roll_pointer, "%d", event);
 		printf("%s\n", roll_buf);
@@ -59,10 +59,9 @@ int updateAngle(event_e event, int pitch_roll){
 		printf("%s\n", pitch_buf);
 		pitch_pointer++;
 	}
-
 }
 
-int clearingLastDigit(int pitch_roll){
+void clearingLastDigit(int pitch_roll){
 	if(pitch_roll == 0){
 		roll_pointer--;
 		sprintf(roll_buf + roll_pointer, "\0");
@@ -157,7 +156,7 @@ int set_state(){
 					//add number to roll variable
 					printf("Adding digit %d\n", event-1);
 					next_state = ENTER_ROLL_STATE;
-					updateAngle(event-1, 0);
+					updateAngle((event-1), 0);
 				}
 				break;
 			case ENTER_PITCH_STATE:
@@ -264,4 +263,5 @@ int updateState(int digit, int duration){
 	setPressType(duration);
 	setEvent(digit);
 	set_state();
+	return 0;
 }

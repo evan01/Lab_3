@@ -32,7 +32,7 @@
   */
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
-#include "stm32f4xx.h"
+#include <stm32f407xx.h>
 #include "stm32f4xx_it.h"
 
 /* USER CODE BEGIN 0 */
@@ -74,4 +74,15 @@ void EXTI0_IRQHandler(void){
     //Call the HAL interrupt function...
     HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
 }
+
+void HardFault_Handler(void)
+{
+    /* Go to infinite loop when Hard Fault exception occurs */
+    printf("\n\nERROR, HARD FAULT\n");
+    while (1)
+    {
+
+    }
+}
+
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

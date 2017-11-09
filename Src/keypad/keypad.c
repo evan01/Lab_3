@@ -114,10 +114,11 @@ int getPressedKey(int column, int row){
 					return 11;
 			}
 	}
+	return -1;
 }
 
 
-int readInput(){
+int readInput(void){
 	int a = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_4);
 	int b = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_5);
 	int c = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_0);

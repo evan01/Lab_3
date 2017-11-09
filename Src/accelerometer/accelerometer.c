@@ -55,9 +55,9 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
     accZ = Buffer[2];
 
     //Then CALIBRATE the readings through matrix multiplication
-	if(counter < 1100)
-		//printf("%3f,%3f,%3f\n", accX, accY, accZ);
-		counter = 0;
+//	if(counter < 1100)
+//		//printf("%3f,%3f,%3f\n", accX, accY, accZ);
+//		counter = 0;
 //	printf("\n\n\nRAW----->\t\tX: %3f   Y: %3f   Z: %3f\n", accX, accY, accZ);
     float32_t readings[4] = {accX,accY,accZ,1};
     arm_mat_init_f32(&IN, 1,4, (float32_t *)readings);
@@ -74,11 +74,15 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 
     //Set global pitch and roll variables.
 //	printf("FILTER---->\t\tX: %3f   Y: %3f   Z: %3f\n\n",f.x,f.y,f.z);
-    pitch = (float)atan2f((-f.y), sqrtf(f.x * f.x + f.z * f.z)) * 180.0 / M_PI;
-    roll = (float)atan2f(f.x, f.z) * 180.0 / M_PI;
-		pitch = (float)round(fabsf(pitch));
-		roll = (float)round(fabsf(roll));
-	printf("\t\t\t=======PITCH: %3f,ROLL:%3f\n\n",pitch,roll);
+    pitch = (double)atan2f((-f.y), sqrtf(f.x * f.x + f.z * f.z)) * 180.0 / M_PI;
+    roll = (double)atan2f(f.x, f.z) * 180.0 / M_PI;
+	pitch = (float)round(fabsf(pitch));
+	roll = (float)round(fabsf(roll));
+    if (counter == 100){
+        printf("\t\t\t=======PITCH: %3f,ROLL:%3f\n\n",pitch,roll);
+        counter = 0;
+    }
+
     HAL_GPIO_TogglePin(GPIOD,GPIO_PIN_13);
 	counter++;
 }

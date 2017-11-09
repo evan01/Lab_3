@@ -1,1 +1,1 @@
-extern int readInput();
+extern int readInput(void);
