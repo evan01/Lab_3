@@ -2,9 +2,7 @@
 #include <stm32f407xx.h>
 #include "stm32f4xx_hal.h"
 #include "gpio.h"
-#include "lis3dsh.h"
 #include "display.h"
-#include "filter/filter.h"
 #include "accelerometer/accelerometer.h"
 #include "state_machine.h"
 #include <stdio.h>
@@ -28,15 +26,59 @@ uint32_t judgeDuty(uint32_t target, float current) {
 
 }
 
-int infiniteLoop(int value) {
+int display(int value) {
 	 //display the digits
 	if(value == 1){
-        displayDigits(pitch);
-    } else {
-		displayDigits(roll);
+        return displayDigits(pitch);
+    } else if(value == 0) {
+		return displayDigits(roll);
+    }else {
+		//In sleep state
+		return displayDigits(value);
+	}
+}
+
+int infiniteLoop(){
+    //Main program execution ins here.
+    if (state == PITCH_MONITOR_STATE) {
+        //printf("pitch %f\n", (float)pitch);
+        display(1);
+    } else if (state == ROLL_MONITOR_STATE) {
+        display(0);
     }
-    
-    return 0;
+    else if(state == START_STATE){
+        display(8888);
+    }else if(state == SLEEP_STATE){
+        resetDisplay();
+//    }
+			}else if(state == ENTER_ROLL_STATE){
+				float f;
+				sscanf(roll_buf,"%f",&f);
+				display((int)f);
+			}else if(state == ENTER_PITCH_STATE){
+				float f;
+				sscanf(pitch_buf,"%f",&f);
+				display((int)f);
+			}
+
+
+//			int i_roll = round(roll);
+//			int i_pitch = round(pitch);
+//			int ui_roll = abs(i_roll);
+//			int ui_pitch = abs(i_pitch);
+//			printf("roll: %d, pitch: %d\n", ui_roll, ui_pitch);
+//			if(state == START_STATE){
+//				display(8888, timerValue);
+//			}
+
+//			setLedIntensity(duty, 1);
+//			setLedIntensity(duty, 2);
+//			setLedIntensity(duty, 3);
+//			setLedIntensity(duty, 4);
+//			duty++;
+//			if(duty == 100){
+//				duty = 0;
+//			}
 }
 
 int main(void) {
@@ -57,46 +99,8 @@ int main(void) {
 //		HAL_TIM_Base_Start_IT(&htim2);
     int duty = 0;
     while (1) {
-        //Main program execution ins here.
-        if (state == PITCH_MONITOR_STATE) {
-			//printf("pitch %f\n", (float)pitch);
-            infiniteLoop(1);
-        } else if (state == ROLL_MONITOR_STATE) {
-            infiniteLoop(0);
-        }
-//			else if(state == START_STATE){
-//				infiniteLoop(0000, timerValue);
-//			}else if(state == SLEEP_STATE){
-//				resetDisplay();
-//			}else if(state == ENTER_ROLL_STATE){
-//				float f;
-//				sscanf(roll_buf,"%f",&f);
-//				infiniteLoop(f, timerValue);
-//			}else if(state == ENTER_PITCH_STATE){
-//				float f;
-//				sscanf(pitch_buf,"%f",&f);
-//				infiniteLoop(f, timerValue);
-//			}
 
-
-//			int i_roll = round(roll);
-//			int i_pitch = round(pitch);
-//			int ui_roll = abs(i_roll);
-//			int ui_pitch = abs(i_pitch);
-//			printf("roll: %d, pitch: %d\n", ui_roll, ui_pitch);
-//			if(state == START_STATE){
-//				infiniteLoop(8888, timerValue);
-//			}
-
-//			setLedIntensity(duty, 1);
-//			setLedIntensity(duty, 2);
-//			setLedIntensity(duty, 3);
-//			setLedIntensity(duty, 4);
-//			duty++;
-//			if(duty == 100){
-//				duty = 0;
-//			}
-
+        infiniteLoop();
         readInput();
 
     }

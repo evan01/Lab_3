@@ -171,11 +171,11 @@ int sendValuesToDisplay(int panelToDisplay){
 }
 
 int displayDigits(float value){
-    static toggle = 0;
-    if (toggle){
-        toggle = 0;
+    static int counter = 0;
+    if (counter < 10){
+        counter = 0;
     } else{
-        toggle = 1;
+        counter++;
         return 0;
     }
 	//First thing is to load the values for RMS VOLTAGE into the display values

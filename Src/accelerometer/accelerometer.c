@@ -79,11 +79,10 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	pitch = (float)round(fabsf(pitch));
 	roll = (float)round(fabsf(roll));
     if (counter == 100){
+		HAL_GPIO_TogglePin(GPIOD,GPIO_PIN_13);
         printf("\t\t\t=======PITCH: %3f,ROLL:%3f\n\n",pitch,roll);
         counter = 0;
     }
-
-    HAL_GPIO_TogglePin(GPIOD,GPIO_PIN_13);
 	counter++;
 }
 
