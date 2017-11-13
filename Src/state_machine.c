@@ -2,10 +2,6 @@
 #include <string.h>
 #include "state_machine.h"
 
-
-
-
-
 int target_roll;
 char roll_buf[10];
 int roll_pointer = 0;
@@ -24,8 +20,12 @@ event_e event;
 0 -> roll
 1 -> pitch
 */
+ /*
+ prints the state name
+ @param state_e state state type
 
-int printState(state_e state){
+ */
+void printState(state_e state){
 	switch(state){
 		case START_STATE:
 			printf("START_STATE\n");
@@ -46,9 +46,13 @@ int printState(state_e state){
 			printf("ROLL_MONITOR_STATE\n");
 			break;
 	}
-	return 0;
 }
 
+/*
+Given an event and specify pitch or roll, update the target pitch or roll
+@param event_e which event happened
+@param int pitch_roll, 0 -> roll and 1-> pitch
+*/
 void updateAngle(event_e event, int pitch_roll){
 	if(pitch_roll == 0){
 		sprintf(roll_buf + roll_pointer, "%d", event);
@@ -60,6 +64,11 @@ void updateAngle(event_e event, int pitch_roll){
 		pitch_pointer++;
 	}
 }
+
+/*
+Clear the ast digit in the pitch or roll buffer
+@param int pitch_roll, 0 -> roll and 1-> pitch
+*/
 
 void clearingLastDigit(int pitch_roll){
 	if(pitch_roll == 0){
@@ -73,7 +82,11 @@ void clearingLastDigit(int pitch_roll){
 	}
 }
 
+/*
+Update global variable press_type
+@param int duration, duration of press (0, 1, 2, 3)
 
+*/
 int setPressType(int duration){
 	printf("Press Type: ");
 	switch(duration){
@@ -94,13 +107,16 @@ int setPressType(int duration){
 			printf("LONG_PRESS, ");
 			break;
 		default:
-			press_type = REGULAR;
-			printf("REGULAR, ");
+			press_type = LONG_PRESS;
+			printf("LONG_PRESS, ");
 			break;
 	}
 	return 0;
 }
 
+/*
+Reads the global state and event, updates the state
+*/
 int set_state(){
 	printf("Initial State: ");
 	printState(state);
@@ -111,7 +127,6 @@ int set_state(){
 		roll_pointer = 0;
 		pitch_pointer = 0;
 		state = ENTER_ROLL_STATE;
-//		sscanf(roll_buf, "%f", &placeholder_value);
 	}
 	if(press_type == LONG_PRESS){
 		if(event == STAR){
@@ -160,7 +175,6 @@ int set_state(){
 					}else{
 						digit = event-1;
 					}
-					printf("Adding digit %d\n", digit);
 					next_state = ENTER_ROLL_STATE;
 					updateAngle(digit, 0);
 				}
@@ -168,7 +182,6 @@ int set_state(){
 			case ENTER_PITCH_STATE:
 				if(event == HASHTAG){
 					next_state = PITCH_MONITOR_STATE;
-					// sprintf(pitch_buf + pitch_pointer, "\0");
 					sscanf(pitch_buf, "%d", &target_pitch);
 					printf("Final pitch = %d\n", target_pitch);
 				}else if(event == STAR){
@@ -215,6 +228,10 @@ int set_state(){
 	return 0;
 }
 
+/*
+Recognize which event is set given a digit
+@param digit, digit pressed on keypad with 10 -> STAR and 11 -> HASHTAG
+*/
 int setEvent(int digit){
 	printf("Event: ");
 	switch(digit){
@@ -270,6 +287,13 @@ int setEvent(int digit){
 	return 0;
 }
 
+
+/*
+Extern
+Updates the state given the digit pressed and its duration
+@param int digit, digit pressed on keypad
+@duration int duration, duration of press
+*/
 int updateState(int digit, int duration){
 	printf("digit: %d, duration: %d\n", digit, duration);
 	setPressType(duration);

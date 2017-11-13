@@ -38,43 +38,28 @@ int display(int value) {
 }
 
 int infiniteLoop() {
-    static uint32_t duty = 0;
     //Main program execution ins here.
     if (state == PITCH_MONITOR_STATE) {
-        //printf("pitch %f\n", (float)pitch);
         display(1);
-        uint32_t intensity = judgeDuty(target_pitch, pitch);
-        setLedIntensityPitch(intensity);
     } else if (state == ROLL_MONITOR_STATE) {
         display(0);
-        uint32_t intensity = judgeDuty(target_roll, roll);
-        setLedIntensityPitch(intensity);
     } else if (state == START_STATE) {
         display(8888);
     } else if (state == SLEEP_STATE) {
         resetDisplay();
-//    }
     } else if (state == ENTER_ROLL_STATE) {
-        float f;
+        float f=0.0;
         sscanf(roll_buf, "%f", &f);
         display((int) f);
     } else if (state == ENTER_PITCH_STATE) {
-        float f;
+        float f=0.0;
         sscanf(pitch_buf, "%f", &f);
         display((int) f);
     }
-
-//			setLedIntensityPitch(duty);
-
-    setLedIntensityRoll(0);
-    //setLedIntensity(duty, 3);
-    //setLedIntensity(duty, 4);
-    duty += 10;
-    if (duty == 100) {
-        duty = 0;
-    }
-
-
+		uint32_t intensityPitch = judgeDuty(target_pitch, pitch);
+		uint32_t intensityRoll = judgeDuty(target_roll, roll);
+		setLedIntensityPitch(intensityPitch);
+		setLedIntensityRoll(intensityRoll);
 }
 
 int main(void) {
@@ -91,14 +76,10 @@ int main(void) {
 
     /* Initialize all configured peripherals */
     MX_GPIO_Init();
-//		MX_TIM2_Init();
-//		HAL_TIM_Base_Start_IT(&htim2);
 
     while (1) {
-
         infiniteLoop();
         readInput();
-
     }
 
 }

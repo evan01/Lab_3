@@ -12,7 +12,9 @@ int row = 0;
 int keypressed = 0;
 int key = 0;
 
-
+/*
+Switches the pins' IO Mode, row Pins become Input pins, column Pins become Output pins
+*/
 void switchIO(){
 	GPIO_InitTypeDef GPIO_InitStruct;
 	
@@ -37,6 +39,7 @@ void switchIO(){
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 	
+	//Set output pins to 0
 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4|GPIO_PIN_5, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
 
@@ -44,6 +47,9 @@ void switchIO(){
 	
 }
 
+/*
+Revert back to initial IO configuration
+*/
 void resetIO(){
 	rows[0] = 0;
 	rows[1] = 0;
@@ -78,6 +84,12 @@ void resetIO(){
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 }
 
+/*
+Get key pressed 
+@param int column, which column the key belongs to
+@param int row, which row the key belongs to
+@return int, what key is pressed
+*/
 int getPressedKey(int column, int row){
 	switch(column){
 		case 1:
@@ -117,7 +129,9 @@ int getPressedKey(int column, int row){
 	return -1;
 }
 
-
+/*
+Reads the column inputs pin, recognizes for 
+*/
 int readInput(void){
 	int a = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_4);
 	int b = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_5);
@@ -131,7 +145,6 @@ int readInput(void){
 		}else if(c == 0){
 			column = 3;
 		}
-
 		
 		switchIO();
 		
@@ -169,7 +182,9 @@ int readInput(void){
 			}
 			
 			printf("key: %d, duration: %d, counter: %d\n", key, duration, keypad_counter);
-			updateState(key, duration);
+			if(duration != -1){
+					updateState(key, duration);
+			}
 			keypressed = 0;
 			keypad_counter = 0;
 		}
